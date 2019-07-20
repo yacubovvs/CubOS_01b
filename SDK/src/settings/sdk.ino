@@ -1,0 +1,5 @@
+/*
+    SDK SETTINGS
+*/
+
+#define useNativeMenu
