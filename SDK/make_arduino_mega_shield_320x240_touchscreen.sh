@@ -28,7 +28,7 @@ cp src/os_*.ino                                                 build/arduino/me
 cp src/apps/os_exec_b.ino                                       build/arduino/mega_shield_240x320_touchscreen/cubos/
 cp src/libs/driver_display_tft_shield_touchscreen.ino           build/arduino/mega_shield_240x320_touchscreen/cubos/
 
-cp src/libs/driver_controls_mega_shield_touchscreen.ino         build/arduino/mega_shield_240x320_touchscreen/cubos/
+cp src/libs/driver_controls_tft_shield_touchscreen.ino          build/arduino/mega_shield_240x320_touchscreen/cubos/
 
 cp src/libs/driver_sdcard_mega_shield320x240.ino                build/arduino/mega_shield_240x320_touchscreen/cubos/
 

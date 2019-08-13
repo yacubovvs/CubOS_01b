@@ -71,12 +71,12 @@ byte dp = 0;
 byte repeats = 0;
 boolean fileOpened = false;
 
-#define OS_CONSTROL_EVERY_MS 100
+#define OS_CONSTROL_EVERY_MS 30
 byte timer_in_b = 0;
 void check_os_controls_ifneed(){
   if(millis() - os_clock_time - timer_in_b*OS_CONSTROL_EVERY_MS > OS_CONSTROL_EVERY_MS){
     timer_in_b++;
-    //os_control_loop();
+    os_control_loop();
 
     //drawDebug("Check os_controls");
   }
@@ -534,8 +534,10 @@ uint64_t os_run_b_readParam(){
           return 0;
         #endif
       }else if(get_sys_param==SYSTEM_VALUE_IS_TOUCHED){
-        #ifndef conf_m5stack
-          return os_control_pressStart[0];
+        #ifdef isTouchScreen
+          return touchScreen_isTouch_Start();
+        #else
+          return false;
         #endif
       }else if(get_sys_param==SYSTEM_VALUE_GET_TOUCH_X){
         #ifdef isTouchScreen

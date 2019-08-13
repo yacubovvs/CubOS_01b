@@ -9,7 +9,11 @@
 //const float pi = 3.141592;
 
 const float get_pi(){
-    return pi;
+    #ifdef platform_esp
+        return 3.141592;
+    #else
+        return pi;
+    #endif
 }
 
 char * int_to_char(int val){
@@ -26,9 +30,11 @@ void os_draw_statusbar(){
     #ifdef tabletView
 
         //Background
-        setDrawColor(0x06, 0x07, 0x10);
-        drawRect(0, 0, SCREEN_WIDTH, tabletView_statusBarHeight, true);
-        setDrawColor_contrast();
+        #ifdef framebuffer_linearhash
+          setDrawColor(0x06, 0x07, 0x10);
+          //drawRect(0, 0, SCREEN_WIDTH, tabletView_statusBarHeight, true);
+          setDrawColor_contrast();
+        #endif
     
         // Time
         char v1[3];

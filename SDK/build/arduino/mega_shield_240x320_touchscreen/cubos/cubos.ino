@@ -69,7 +69,10 @@
     #    # #  # #  # #  #   #    #      
     #    # #  # #  # #  #   #  ##       
 */
-#include "libs_h/CyberLib/CyberLib.h"
+
+#ifndef conf_m5stack
+	#include "libs_h/CyberLib/CyberLib.h"
+#endif
 
 unsigned int dtime = 0;
 
@@ -196,8 +199,26 @@ unsigned int dtime = 0;
 *                                    *
 **************************************
 */
+
+#ifdef platform_avr
+	#include <avr/sleep.h>
+#endif
+
 void setup()
 { 
+  #ifdef platform_avr
+	//set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+	//sleep_enable();
+
+	//MCUCR = bit (BODS) | bit (BODSE);
+	//MCUCR = bit (BODS);
+	//sleep_cpu();
+  #endif
+
+  #ifdef device_has_power_manager
+	power_manager_setup();
+  #endif
+
   setup_displayDriver();
 	os_control_setup();
 	//setup_os_menu();
@@ -210,6 +231,18 @@ void setup()
 		#endif
 	#else
 		no_native_apps_SETUP();
+	#endif
+
+	#ifdef device_has_barometer
+		barometer_setup();
+	#endif
+
+	#ifndef device_has_power_manager
+		#ifdef device_has_accelerometer
+			accelerometer_setup();
+		#endif
+	#else
+		// if device_has_power_manager define - start accelerometer then need
 	#endif
 
 }
@@ -232,17 +265,23 @@ void loop(){
 	#endif
 	
 
-////////////////////////////////////////////////////////////////////
-  //  Debug string data
-      setDrawColor_background();
-      drawRect(0,310, 30, 320, true);
-      setDrawColor_contrast();
-      //showFreeMemory(); // show free memory
-      drawDebugString(dtime, 310); // show time need for 1 loop
-      //drawDebugString(1000/dtime, 10); // FPS
-      //drawDebugString(millis()/1000, 55); // Timer (if you want to know is os freezing)
-  //
-  ////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	//  Debug string data
+      	
+		#ifdef colorScreen
+			setDrawColor_background();
+			drawRect(0,310, 30, 320, true);
+		#endif  
+      	//showFreeMemory(); // show free memory
+      	drawDebugString(dtime, 0); // show time needed for 1 loop
+      	//drawDebugString(1000/dtime, 10); // FPS
+      	//drawDebugString(millis()/1000, 55); // Timer (if you want to know is os freezing)
+
+		#ifdef colorScreen
+			setDrawColor_contrast();
+		#endif  
+  	//
+  	////////////////////////////////////////////////////////////////////
 
   updatescreen_displayDriver();
 }

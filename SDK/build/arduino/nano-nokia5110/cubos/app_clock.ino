@@ -32,9 +32,9 @@ class appNameClass: public Application{
             //EVERY FRAME CODE
             app_clock_loop();
 
-      			if (isPressStart_Select()){
-      				os_switch_to_app(-1);
-      			}
+            if (isPressStart_Select()){
+              os_switch_to_app(-1);
+            }
 
            /*                                                                                         *
             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -59,14 +59,14 @@ class appNameClass: public Application{
             */
         };
 
-		static unsigned const char* getParams(unsigned char type){
+    static unsigned const char* getParams(unsigned char type){
             switch(type){ 
               case PARAM_TYPE_NAME: return (unsigned char*)appName; 
               case PARAM_TYPE_ICON: return icon;
               default: return (unsigned char*)""; }
         };
 
-		const static byte icon[] PROGMEM;
+    const static byte icon[] PROGMEM;
 
         appNameClass(){ // Constructor
             setup();
@@ -98,7 +98,11 @@ class appNameClass: public Application{
       }
     }
     
-		#define WATCHFACES_COUNT 3
+    #ifdef conf_arduinoMega2560_touch
+      #define WATCHFACES_COUNT 2
+    #else
+      #define WATCHFACES_COUNT 3
+    #endif
 
     ////////////////////////////
     //  WATCHFACES:
@@ -106,145 +110,155 @@ class appNameClass: public Application{
     //  2. Digital - HH:MM:SS
     //  3. Analog
 
-		void app_clock_loop(){
+    void app_clock_loop(){
 
-			if (isPressStart_Left()){
-				current_watchface++;
-				if (current_watchface>=WATCHFACES_COUNT) current_watchface=0;
-			}else if (isPressStart_Right()){
-				current_watchface--;
-				if (current_watchface<0) current_watchface = WATCHFACES_COUNT-1;
-			}
+      if (isPressStart_Left()){
+        if (current_watchface==WATCHFACES_COUNT-1) current_watchface=0;
+        else current_watchface++;
+      }else if (isPressStart_Right()){
+        if (current_watchface==0) current_watchface = WATCHFACES_COUNT-1;
+        else current_watchface--;
+      }
 
-			const int center_x = SCREEN_WIDTH/2;
-			const int center_y = SCREEN_HEIGHT/2;
+      const int center_x = SCREEN_WIDTH/2;
+      const int center_y = SCREEN_HEIGHT/2;
 
-			const int radius_small = min(center_x, center_y);
-			const int radius_big = max(center_x, center_y);
+      const int radius_small = min(center_x, center_y);
+      const int radius_big = max(center_x, center_y);
 
-			if (current_watchface==0 || current_watchface==1){
-				int scale = min(SCREEN_WIDTH/(current_watchface==0?19:31), SCREEN_HEIGHT/5);
-				int x = (SCREEN_WIDTH - scale*(current_watchface==0?19:31))/2;
-				int y = (SCREEN_HEIGHT - scale*5)/2;
-				
-				draw_digit(os_clock_currentTime_hour()/10,  0, scale, x, y);
-				draw_digit(os_clock_currentTime_hour()%10,  1, scale, x, y);
-				draw_digit(10, 2, scale, x, y);
-				draw_digit(os_clock_currentTime_minutes()/10, 3, scale, x, y);
-				draw_digit(os_clock_currentTime_minutes()%10, 4, scale, x, y);
-				
-				if(current_watchface==1){
-					draw_digit(10, 5, scale, x, y);
-					draw_digit(os_clock_currentTime_seconds()/10, 6, scale, x, y);
-					draw_digit(os_clock_currentTime_seconds()%10, 7, scale, x, y);
-				}
-			}else if(current_watchface==2){
+      if (current_watchface==0 || current_watchface==1){
+        int scale = min(SCREEN_WIDTH/(current_watchface==0?19:31), SCREEN_HEIGHT/5);
+        int x = (SCREEN_WIDTH - scale*(current_watchface==0?19:31))/2;
+        int y = (SCREEN_HEIGHT - scale*5)/2;
+        
+        draw_digit(os_clock_currentTime_hour()/10,  0, scale, x, y);
+        draw_digit(os_clock_currentTime_hour()%10,  1, scale, x, y);
+        draw_digit(10, 2, scale, x, y);
+        draw_digit(os_clock_currentTime_minutes()/10, 3, scale, x, y);
+        draw_digit(os_clock_currentTime_minutes()%10, 4, scale, x, y);
+        
+        if(current_watchface==1){
+          draw_digit(10, 5, scale, x, y);
+          draw_digit(os_clock_currentTime_seconds()/10, 6, scale, x, y);
+          draw_digit(os_clock_currentTime_seconds()%10, 7, scale, x, y);
+        }
 
-				// Drawing lines
-				// 1. Bold lines 
+      #ifdef conf_arduinoMega2560_touch
+      }
+      #else
+      }else if(current_watchface==2){
 
-				#define analog_boldlines_height 	2
-				#define analog_boldlines_width 		2
-				#define analog_smalllines_height 	0
+        // Drawing lines
+        // 1. Bold lines 
 
-				drawRect(center_x + analog_boldlines_width - 1, center_y - radius_small, center_x - analog_boldlines_width, center_y - radius_small + analog_boldlines_height, true); // top
-				drawRect(center_x + analog_boldlines_width - 1, center_y + radius_small - analog_boldlines_height-1, center_x - analog_boldlines_width, center_y + radius_small-1, true); // bottom
+        #define analog_boldlines_height   2
+        #define analog_boldlines_width    2
+        #define analog_smalllines_height  0
 
-				drawRect(center_x + radius_small, center_y + analog_boldlines_width - 1, center_x + radius_small - analog_boldlines_height - 1, center_y - analog_boldlines_width + 1, true); // right
-				drawRect(center_x - radius_small, center_y + analog_boldlines_width - 1, center_x - radius_small + analog_boldlines_height + 1, center_y - analog_boldlines_width + 1, true); // left
+        drawRect(center_x + analog_boldlines_width - 1, center_y - radius_small, center_x - analog_boldlines_width, center_y - radius_small + analog_boldlines_height, true); // top
+        drawRect(center_x + analog_boldlines_width - 1, center_y + radius_small - analog_boldlines_height-1, center_x - analog_boldlines_width, center_y + radius_small-1, true); // bottom
 
-				// 2. Small lines
-				#define i_max 24
-				for (byte i=0; i<i_max; i++){
-					float i_cos = cos(360/i_max*i*get_pi()/180);
-					float i_sin = sin(360/i_max*i*get_pi()/180);
-					drawLine(center_x + round((radius_small - analog_smalllines_height) * i_cos), center_y + round((radius_small - analog_smalllines_height) * i_sin), center_x + round(radius_small * i_cos), center_y + round(radius_small * i_sin));
-				}
-				
-				// 3. Drawing arrows
-				#define analog_arrow_hour_length 			    radius_small*0.70
-				#define analog_arrow_hour_back_length     radius_small*0.20
-				#define analog_arrow_hour_width 			    radius_small*0.06
+        drawRect(center_x + radius_small, center_y + analog_boldlines_width - 1, center_x + radius_small - analog_boldlines_height - 1, center_y - analog_boldlines_width + 1, true); // right
+        drawRect(center_x - radius_small, center_y + analog_boldlines_width - 1, center_x - radius_small + analog_boldlines_height + 1, center_y - analog_boldlines_width + 1, true); // left
 
-				#define analog_arrow_minutes_length 		  radius_small*0.87
-				#define analog_arrow_minutes_back_length 	radius_small*0.30
-				#define analog_arrow_minutes_width 			  radius_small*0.04
+        // 2. Small lines
+        #define i_max 24
+        for (byte i=0; i<i_max; i++){
+          float i_cos = cos(360/i_max*i*get_pi()/180);
+          float i_sin = sin(360/i_max*i*get_pi()/180);
+          drawLine(center_x + round((radius_small - analog_smalllines_height) * i_cos), center_y + round((radius_small - analog_smalllines_height) * i_sin), center_x + round(radius_small * i_cos), center_y + round(radius_small * i_sin));
+        }
+        
+        // 3. Drawing arrows
+        #define analog_arrow_hour_length          radius_small*0.70
+        #define analog_arrow_hour_back_length     radius_small*0.20
+        #define analog_arrow_hour_width           radius_small*0.06
 
-				#define analog_arrow_seconds_length 		  radius_small*0.95
-				#define analog_arrow_seconds_back_length 	radius_small*0.35
-				#define analog_arrow_seconds_width			  0
+        #define analog_arrow_minutes_length       radius_small*0.87
+        #define analog_arrow_minutes_back_length  radius_small*0.30
+        #define analog_arrow_minutes_width        radius_small*0.04
 
-				// Hours
-				byte hours = os_clock_currentTime_hour();
-				float radian_angle_arrow_cos 	= cos(-360/12*((hours+3)%12)*get_pi()/180);
-				float radian_angle_arrow_sin    = sin(-360/12*((hours+3)%12)*get_pi()/180);
+        #define analog_arrow_seconds_length       radius_small*0.95
+        #define analog_arrow_seconds_back_length  radius_small*0.35
+        #define analog_arrow_seconds_width        0
 
-				drawRect_custom(
-					center_x - analog_arrow_hour_length*radian_angle_arrow_cos - analog_arrow_hour_width*radian_angle_arrow_sin, 			center_y + analog_arrow_hour_length*radian_angle_arrow_sin - analog_arrow_hour_width*radian_angle_arrow_cos,
-					center_x + analog_arrow_hour_back_length*radian_angle_arrow_cos - analog_arrow_hour_width*radian_angle_arrow_sin, 	center_y - analog_arrow_hour_back_length*radian_angle_arrow_sin - analog_arrow_hour_width*radian_angle_arrow_cos,
-					center_x + analog_arrow_hour_back_length*radian_angle_arrow_cos + analog_arrow_hour_width*radian_angle_arrow_sin, 	center_y - analog_arrow_hour_back_length*radian_angle_arrow_sin + analog_arrow_hour_width*radian_angle_arrow_cos,
-					center_x - analog_arrow_hour_length*radian_angle_arrow_cos + analog_arrow_hour_width*radian_angle_arrow_sin, 			center_y + analog_arrow_hour_length*radian_angle_arrow_sin + analog_arrow_hour_width*radian_angle_arrow_cos,
-					true
-				);
+        // Hours
+        byte hours = os_clock_currentTime_hour();
+        float radian_angle_arrow_cos  = cos(-360/12*((hours+3)%12)*get_pi()/180);
+        float radian_angle_arrow_sin    = sin(-360/12*((hours+3)%12)*get_pi()/180);
 
-				// Minutes
-				byte minutes = os_clock_currentTime_minutes();
-				radian_angle_arrow_cos 	= cos(-360/60*((minutes+15)%60)*get_pi()/180);
-				radian_angle_arrow_sin  = sin(-360/60*((minutes+15)%60)*get_pi()/180);
+        drawRect_custom(
+          center_x - analog_arrow_hour_length*radian_angle_arrow_cos - analog_arrow_hour_width*radian_angle_arrow_sin,      center_y + analog_arrow_hour_length*radian_angle_arrow_sin - analog_arrow_hour_width*radian_angle_arrow_cos,
+          center_x + analog_arrow_hour_back_length*radian_angle_arrow_cos - analog_arrow_hour_width*radian_angle_arrow_sin,   center_y - analog_arrow_hour_back_length*radian_angle_arrow_sin - analog_arrow_hour_width*radian_angle_arrow_cos,
+          center_x + analog_arrow_hour_back_length*radian_angle_arrow_cos + analog_arrow_hour_width*radian_angle_arrow_sin,   center_y - analog_arrow_hour_back_length*radian_angle_arrow_sin + analog_arrow_hour_width*radian_angle_arrow_cos,
+          center_x - analog_arrow_hour_length*radian_angle_arrow_cos + analog_arrow_hour_width*radian_angle_arrow_sin,      center_y + analog_arrow_hour_length*radian_angle_arrow_sin + analog_arrow_hour_width*radian_angle_arrow_cos,
+          true
+        );
+
+        // Minutes
+        byte minutes = os_clock_currentTime_minutes();
+        radian_angle_arrow_cos  = cos(-360/60*((minutes+15)%60)*get_pi()/180);
+        radian_angle_arrow_sin  = sin(-360/60*((minutes+15)%60)*get_pi()/180);
 
 
-				drawRect_custom(
-					center_x - analog_arrow_minutes_length*radian_angle_arrow_cos - analog_arrow_minutes_width*radian_angle_arrow_sin, 		center_y + analog_arrow_minutes_length*radian_angle_arrow_sin - analog_arrow_minutes_width*radian_angle_arrow_cos,
-					center_x + analog_arrow_minutes_back_length*radian_angle_arrow_cos - analog_arrow_minutes_width*radian_angle_arrow_sin, 	center_y - analog_arrow_minutes_back_length*radian_angle_arrow_sin - analog_arrow_minutes_width*radian_angle_arrow_cos,
-					center_x + analog_arrow_minutes_back_length*radian_angle_arrow_cos + analog_arrow_minutes_width*radian_angle_arrow_sin, 	center_y - analog_arrow_minutes_back_length*radian_angle_arrow_sin + analog_arrow_minutes_width*radian_angle_arrow_cos,
-					center_x - analog_arrow_minutes_length*radian_angle_arrow_cos + analog_arrow_minutes_width*radian_angle_arrow_sin, 		center_y + analog_arrow_minutes_length*radian_angle_arrow_sin + analog_arrow_minutes_width*radian_angle_arrow_cos,
-					true
-				);
+        drawRect_custom(
+          center_x - analog_arrow_minutes_length*radian_angle_arrow_cos - analog_arrow_minutes_width*radian_angle_arrow_sin,    center_y + analog_arrow_minutes_length*radian_angle_arrow_sin - analog_arrow_minutes_width*radian_angle_arrow_cos,
+          center_x + analog_arrow_minutes_back_length*radian_angle_arrow_cos - analog_arrow_minutes_width*radian_angle_arrow_sin,   center_y - analog_arrow_minutes_back_length*radian_angle_arrow_sin - analog_arrow_minutes_width*radian_angle_arrow_cos,
+          center_x + analog_arrow_minutes_back_length*radian_angle_arrow_cos + analog_arrow_minutes_width*radian_angle_arrow_sin,   center_y - analog_arrow_minutes_back_length*radian_angle_arrow_sin + analog_arrow_minutes_width*radian_angle_arrow_cos,
+          center_x - analog_arrow_minutes_length*radian_angle_arrow_cos + analog_arrow_minutes_width*radian_angle_arrow_sin,    center_y + analog_arrow_minutes_length*radian_angle_arrow_sin + analog_arrow_minutes_width*radian_angle_arrow_cos,
+          true
+        );
 
-				// Seconds
-				byte seconds = os_clock_currentTime_seconds();
-				radian_angle_arrow_cos = cos(-360/60*((seconds+15)%60)*get_pi()/180);
-				radian_angle_arrow_sin = sin(-360/60*((seconds+15)%60)*get_pi()/180);
+        // Seconds
+        byte seconds = os_clock_currentTime_seconds();
+        radian_angle_arrow_cos = cos(-360/60*((seconds+15)%60)*get_pi()/180);
+        radian_angle_arrow_sin = sin(-360/60*((seconds+15)%60)*get_pi()/180);
 
-				drawLine(
-					center_x - analog_arrow_seconds_length*radian_angle_arrow_cos - analog_arrow_seconds_width*radian_angle_arrow_sin, 			center_y + analog_arrow_seconds_length*radian_angle_arrow_sin - analog_arrow_seconds_width*radian_angle_arrow_cos,
-					center_x + analog_arrow_seconds_back_length*radian_angle_arrow_cos - analog_arrow_seconds_width*radian_angle_arrow_sin, 	center_y - analog_arrow_seconds_back_length*radian_angle_arrow_sin - analog_arrow_seconds_width*radian_angle_arrow_cos
-				);
-			}
-
-		}
+        drawLine(
+          center_x - analog_arrow_seconds_length*radian_angle_arrow_cos - analog_arrow_seconds_width*radian_angle_arrow_sin,      center_y + analog_arrow_seconds_length*radian_angle_arrow_sin - analog_arrow_seconds_width*radian_angle_arrow_cos,
+          center_x + analog_arrow_seconds_back_length*radian_angle_arrow_cos - analog_arrow_seconds_width*radian_angle_arrow_sin,   center_y - analog_arrow_seconds_back_length*radian_angle_arrow_sin - analog_arrow_seconds_width*radian_angle_arrow_cos
+        );
+      }
+      #endif
+    }
 
 };
 
 const byte appNameClass::icon[] PROGMEM =  {  //128
-	//////////////////////////////////////////////////////////////
-	//		PUT YOUR ICON HERE
-	
-	0x00, 0xF0, 0x0F, 0x00, 0x00, 0xFE, 0x7F, 0x00, 
-	0x80, 0x9F, 0xF9, 0x00, 0xC0, 0x83, 0xC1, 0x03, 
-	0xE0, 0x01, 0x80, 0x07, 0x70, 0x00, 0x00, 0x0E, 
-	0x38, 0x80, 0x01, 0x1C, 0x18, 0x80, 0x01, 0x38, 
-	0x1C, 0x80, 0x01, 0x38, 0x0E, 0x80, 0x01, 0x70, 
-	0x06, 0x80, 0x01, 0x60, 0x06, 0x80, 0x01, 0x60, 
-	0x07, 0x80, 0x01, 0xE0, 0x03, 0x80, 0x01, 0xC0, 
-	0x03, 0x80, 0x01, 0xC0, 0x0F, 0xE0, 0x7F, 0xF0, 
-	0x0F, 0xE0, 0x7F, 0xF0, 0x03, 0x80, 0x01, 0xC0, 
-	0x03, 0x80, 0x01, 0xC0, 0x07, 0x00, 0x00, 0xE0, 
-	0x06, 0x00, 0x00, 0x60, 0x06, 0x00, 0x00, 0x60, 
-	0x0E, 0x00, 0x00, 0x70, 0x1C, 0x00, 0x00, 0x38, 
-	0x1C, 0x00, 0x00, 0x18, 0x38, 0x00, 0x00, 0x1C, 
-	0x70, 0x00, 0x00, 0x0E, 0xE0, 0x01, 0x80, 0x07, 
-	0xC0, 0x83, 0xC1, 0x03, 0x00, 0x9F, 0xF9, 0x01, 
-	0x00, 0xFE, 0x7F, 0x00, 0x00, 0xF0, 0x0F, 0x00, 
+  //////////////////////////////////////////////////////////////
+  //    PUT YOUR ICON HERE
 
-	//
-	//////////////////////////////////////////////////////////////
+  #ifdef colorScreen
+    0x02,0x01,0x02,0x20,0x02,0x20,0x04,0x00,0x66,0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0F,0xF0,0x00,0x00,0x3F,0xFC,0x00,0x00,
+    0xFF,0xFF,0x00,0x01,0xFF,0xFF,0x80,0x03,0xFF,0xFF,0xC0,0x07,0xFF,0xFF,0xE0,0x0F,0xFF,0xFF,0xF0,0x1F,0xFF,0xFF,0xE0,0x19,0xFF,0xFF,0x80,
+    0x18,0x7F,0xFE,0x00,0x3E,0x1F,0xF8,0x1C,0x3F,0x87,0xE0,0x7C,0x3F,0xE1,0x81,0xFC,0x3F,0xF8,0x07,0xFC,0x3F,0xFE,0x1F,0xFC,0x3F,0xFE,0x7F,
+    0xFC,0x3F,0xFE,0x7F,0xFC,0x3F,0xFE,0x7F,0xFC,0x1F,0xFE,0x7F,0xF8,0x1F,0xFE,0x7F,0xF8,0x0F,0xFE,0x7F,0xF0,0x0F,0xFE,0x7F,0xF0,0x07,0xFE,
+    0x7F,0xE0,0x03,0xFE,0x7F,0xC0,0x01,0xFE,0x7F,0x80,0x00,0xFE,0x7F,0x00,0x00,0x3E,0x7C,0x00,0x00,0x0E,0x70,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x04,0xff,0xff,0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x1C,0x06,0x00,0x00,0x78,0x07,0x80,0x01,
+    0xE0,0x01,0xE0,0x07,0x80,0x00,0x78,0x1E,0x00,0x00,0x1E,0x78,0x00,0x00,0x07,0xE0,0x00,0x00,0x01,0x80,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x04,0xb4,0xb4,0xb4,0x00,0x0F,0xF0,0x00,0x00,0x7F,0xFE,0x00,0x01,0xF0,0x0F,0x80,0x03,0xC0,0x03,0xC0,0x07,0x00,0x00,0xE0,0x0E,0x00,0x00,
+    0x70,0x1C,0x00,0x00,0x38,0x38,0x00,0x00,0x1C,0x30,0x00,0x00,0x08,0x60,0x00,0x00,0x02,0x60,0x00,0x00,0x06,0x60,0x00,0x00,0x06,0xC0,0x00,
+    0x00,0x03,0xC0,0x00,0x00,0x03,0xC0,0x00,0x00,0x03,0xC0,0x00,0x00,0x03,0xC0,0x00,0x00,0x03,0xC0,0x00,0x00,0x03,0xC0,0x00,0x00,0x03,0xC0,
+    0x00,0x00,0x03,0x60,0x00,0x00,0x06,0x60,0x00,0x00,0x06,0x70,0x00,0x00,0x0E,0x30,0x00,0x00,0x0C,0x38,0x00,0x00,0x1C,0x1C,0x00,0x00,0x38,
+    0x0E,0x00,0x00,0x70,0x07,0x00,0x00,0xE0,0x03,0xC0,0x03,0xC0,0x01,0xF0,0x0F,0x80,0x00,0x7E,0x7E,0x00,0x00,0x0E,0x70,0x00,0x04,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x18,0x00,0x00,0x00,0x60,0x00,
+    0x00,0x01,0x80,0x00,0x00,0x06,0x00,0x00,0x00,0x18,0x00,0x00,0x00,0x60,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,
+    0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,
+    0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,0x00,0x01,0x80,0x00,
+  #else
+    0x02,0x01,0x02,0x20,0x02,0x20,0x04,0x00,0x00,0x00,0x00,0x0F,0xF0,0x00,0x00,0x7F,0xFE,0x00,0x01,0xF0,0x0F,0x80,0x03,0xC0,0x03,0xC0,0x07,
+    0x00,0x00,0xE0,0x0E,0x00,0x00,0x70,0x1C,0x00,0x00,0x38,0x38,0x00,0x00,0x1C,0x30,0x00,0x00,0x0C,0x60,0x00,0x00,0x06,0x66,0x00,0x00,0x46,
+    0x67,0x80,0x01,0xC6,0xC1,0xE0,0x07,0x83,0xC0,0x78,0x1E,0x03,0xC0,0x1E,0x78,0x03,0xC0,0x07,0xE0,0x03,0xC0,0x01,0x80,0x03,0xC0,0x01,0x80,
+    0x03,0xC0,0x01,0x80,0x03,0xC0,0x01,0x80,0x03,0x60,0x01,0x80,0x06,0x60,0x01,0x80,0x06,0x70,0x01,0x80,0x0E,0x30,0x01,0x80,0x0C,0x38,0x01,
+    0x80,0x1C,0x1C,0x01,0x80,0x38,0x0E,0x01,0x80,0x70,0x07,0x01,0x80,0xE0,0x03,0xC1,0x83,0xC0,0x01,0xF0,0x0F,0x80,0x00,0x7F,0xFE,0x00,0x00,
+    0x0F,0xF0,0x00,
+  #endif
+
+  //
+  //////////////////////////////////////////////////////////////
 };
 
-
-/*
-
-
-
-
-*/

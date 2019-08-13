@@ -85,7 +85,7 @@ void driver_clearScreen(){
     }else{
       red   = 255;
       green = 255;
-      blue  = 244;
+      blue  = 255;
     }
     
     
@@ -145,5 +145,4 @@ void setPixel(int x, int y){
     #endif
   }
 }
-
 

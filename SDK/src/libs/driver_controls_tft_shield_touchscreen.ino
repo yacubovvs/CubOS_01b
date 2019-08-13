@@ -54,6 +54,10 @@ boolean os_control_pressed[]      = {false};
 #define BUTTONS_CONTROLS_MARGIN_LEFT_RIGHT  10
 
 void os_control_setup(){
+  pinMode(46, OUTPUT);
+  //digitalWrite(46, 1);
+  //delay(100);
+  //digitalWrite(46, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -74,13 +78,11 @@ boolean isPress(byte num){
   if (num>=os_control_buttons) return false;
 }
 
-bool software_btn = false;
+bool isTouching = false;
+bool isTouchStart = false;
 
-long lastClick=0;
-
-void os_touch_cancel(){
-  software_btn = false;
-}
+long lastTouch=0;
+long lastTouch_start=0;
 
 void os_control_loop(){
 
@@ -92,23 +94,38 @@ void os_control_loop(){
   digitalWrite(YP, HIGH);   //because TFT control pins
   digitalWrite(XM, HIGH);
 
-  if(millis() - lastClick> 150){
-    os_touch_cancel();
+  if(isTouching && millis() - lastTouch> dtime){
+    isTouching = false;
   }
 
+  if(isTouchStart && millis() - lastTouch_start> dtime){
+    isTouchStart = false;
+  }
+
+
   if (tp.z > MINPRESSURE && tp.z < MAXPRESSURE) {
-    lastClick = millis();
+    //isTouching = true;
+    if(!isTouchStart && !isTouching ){
+      isTouchStart = true;
+
+      lastTouch_start = millis();
+    }
+
+    isTouching = true;
+    
+    lastTouch = millis();
 
     os_touch_x = map(tp.x, TS_LEFT, TS_RT, SCREEN_WIDTH,0);
     os_touch_y = map(tp.y, TS_TOP, TS_BOT, SCREEN_HEIGHT,0);
     
-    software_btn = true;
+    
   
     //drawDebugString(os_touch_x,20);
     //drawDebugString(os_touch_y,30); 
   }
 
-  
+
+  /*
   if (software_btn){
     if (!os_control_pressed[0]){
       os_control_pressStart[0]=true;
@@ -118,14 +135,17 @@ void os_control_loop(){
     os_control_pressStart[0]=false;
     os_control_pressed[0]=false;
   }
-  
+  */
   
 }
 
 //////////////////////////////////////////////////////////////////////////////
 //  Events for apps
+
+boolean touchScreen_isTouching(){return isTouching;}
+boolean touchScreen_isTouch_Start(){return isTouchStart;}
 boolean isPressStart_Right(){return false;}
-boolean isPressStart_Select(){return os_control_pressStart[0];}
+boolean isPressStart_Select(){return isTouchStart;}
 boolean isPressStart_Left(){return false;}
 //
 //////////////////////////////////////////////////////////////////////////////

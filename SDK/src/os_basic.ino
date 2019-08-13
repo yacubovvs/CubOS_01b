@@ -32,7 +32,7 @@ void os_draw_statusbar(){
         //Background
         #ifdef framebuffer_linearhash
           setDrawColor(0x06, 0x07, 0x10);
-          drawRect(0, 0, SCREEN_WIDTH, tabletView_statusBarHeight, true);
+          //drawRect(0, 0, SCREEN_WIDTH, tabletView_statusBarHeight, true);
           setDrawColor_contrast();
         #endif
     
