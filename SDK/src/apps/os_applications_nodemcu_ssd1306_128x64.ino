@@ -7,14 +7,16 @@
  *                                                                                         *
  */
 
-    const byte applications_count = 4; // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CHANGE THIS VALUE
-
     Application *getApp(byte i){
       
         if (i==0) return new ClockApp; 
         if (i==1) return new SettingApp;
-        if (i==2) return new SampleGame;
-        if (i==3) return new TestApp;
+        if (i==2) return new TestApp;
+        if (i==3) return new SampleGame;
+        if (i==4) return new Battery;
+        if (i==5) return new Wificonnect;
+        if (i==6) return new WWW;
+
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ADD YOUR APP HERE
         else return new MainMenu;
     }
@@ -25,9 +27,15 @@
         }else if(i==1){
             SettingApp *app; return ((*app).getParams(type));
         }else if(i==2){
-            SampleGame *app; return ((*app).getParams(type));
-        }else if(i==3){
             TestApp *app; return ((*app).getParams(type));
+        }else if(i==3){
+            SampleGame *app; return ((*app).getParams(type));
+        }else if(i==4){
+            Battery *app; return ((*app).getParams(type));
+        }else if(i==5){
+            Wificonnect *app; return ((*app).getParams(type));
+        }else if(i==6){
+            WWW *app; return ((*app).getParams(type));
         }
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ADD YOUR APP HERE
         else{
@@ -46,5 +54,5 @@
  */
 
 const byte get_application_count(){
-    return applications_count;
+    return os_MAINMENU_APP_COUNT;
 }

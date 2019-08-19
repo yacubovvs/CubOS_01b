@@ -14,6 +14,12 @@
         if (i==2) return new TestApp;
         if (i==3) return new SDAppManager;
         if (i==4) return new SampleGame;
+        if (i==5) return new Battery;
+        if (i==6) return new Wificonnect;
+        if (i==7) return new WWW;
+        if (i==8) return new WifiScan;
+        if (i==9) return new BTScan;
+
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ADD YOUR APP HERE
         else return new MainMenu;
     }
@@ -29,6 +35,16 @@
             SDAppManager *app; return ((*app).getParams(type));
         }else if(i==4){
             SampleGame *app; return ((*app).getParams(type));
+        }else if(i==5){
+            Battery *app; return ((*app).getParams(type));
+        }else if(i==6){
+            Wificonnect *app; return ((*app).getParams(type));
+        }else if(i==7){
+            WWW *app; return ((*app).getParams(type));
+        }else if(i==8){
+            WifiScan *app; return ((*app).getParams(type));
+        }else if(i==9){
+            BTScan *app; return ((*app).getParams(type));
         }
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ADD YOUR APP HERE
         else{

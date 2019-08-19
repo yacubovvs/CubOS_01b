@@ -33,6 +33,17 @@ void updatescreen_displayDriver(){
   display.display();
 }
 
+boolean currentColor = 1;
+
+void setDrawColor(byte r, byte g, byte b){
+  if (r + g + b > 385) currentColor = 0;
+  else currentColor = 1;
+}
+
+void setDrawColor_contrast(){
+  currentColor = 1;
+}
+
 /*
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -55,14 +66,6 @@ void setup_displayDriver(){
    pinMode(D10, INPUT);
 }
 
-void setStr(char * dString, int x, int y){
-  display.setTextColor(WHITE);  //  задаем цвет
-  display.setTextSize(1);  //  задаем шрифт
-  display.setCursor(x,y);  //  задаем координаты курсора
-  display.print(dString);
-}
-
-
 void setPixel(int x, int y){
   setPixel(x, y, false);
 }
@@ -79,4 +82,8 @@ void setPixel(int x, int y, boolean no_limits){
     display.drawPixel(x, y, WHITE);
   }
   
+}
+
+void driver_clearScreen(){
+  display.clearDisplay();
 }

@@ -43,9 +43,10 @@ cp src/os_icons.ino                                             build/arduino/na
 ############################################################################
 
 cp src/libs/driver_display_nokia5110.ino                        build/arduino/nano-nokia5110/cubos/
+cp src/libs/driver_battery.ino                                  build/arduino/nano-nokia5110/cubos/
 cp src/libs/driver_barometer_bmp180.ino                         build/arduino/nano-nokia5110/cubos/
 cp src/libs/driver_accelerometer_gy_521.ino                     build/arduino/nano-nokia5110/cubos/
-cp src/libs/driver_powermanager_watch_atmega328.ino             build/arduino/nano-nokia5110/cubos/
+cp src/libs/driver_powermanager.ino                             build/arduino/nano-nokia5110/cubos/
 
 cp src/libs/driver_controls_nano_watch_3btns.ino                build/arduino/nano-nokia5110/cubos/
 

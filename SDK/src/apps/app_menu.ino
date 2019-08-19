@@ -115,6 +115,8 @@ void MainMenu::loop(){
     
     #ifdef tabletView
 
+      set_DrawLimits(0, tabletView_statusBarHeight + 1, SCREEN_WIDTH, SCREEN_HEIGHT);
+
     /*
      * ##################################################################################################################################
      * #                                                                                                                                #
@@ -151,8 +153,7 @@ void MainMenu::loop(){
         #endif
         
         const int ic_xpos = 0 + i%mainMenu_iconsInRow*(SCREEN_WIDTH-1)/mainMenu_iconsInRow - mainMenu_scrollSize/mainMenu_iconsInRow * (i%mainMenu_iconsInRow) + (content_height<content_area_height?mainMenu_scrollSize/2:0);
-        const int ic_ypos = tabletView_statusBarHeight + i/mainMenu_iconsInRow*(SCREEN_WIDTH-1)/mainMenu_iconsInRow - (mainMenu_scrollSize/mainMenu_iconsInRow)* (int)(i/mainMenu_iconsInRow);
-
+        const int ic_ypos = -this->scroll_y + tabletView_statusBarHeight + i/mainMenu_iconsInRow*(SCREEN_WIDTH-1)/mainMenu_iconsInRow - (mainMenu_scrollSize/mainMenu_iconsInRow)* (int)(i/mainMenu_iconsInRow);
 
         #define AppIconSize 32
         const byte icon_padding_left = (mainMenu_icon_element_size - AppIconSize)/2;
@@ -195,6 +196,14 @@ void MainMenu::loop(){
         const int frame_y2 = frame_y1 + mainMenu_icon_element_size;
         
         drawRect(frame_x1 + frame_selected_app_padding, frame_y1 + frame_selected_app_padding, frame_x2 - frame_selected_app_padding, frame_y2 - frame_selected_app_padding);
+      
+        if (frame_y2 - this->scroll_to_y + this->scroll_y> SCREEN_HEIGHT){
+          while(frame_y2 - this->scroll_to_y + this->scroll_y> SCREEN_HEIGHT) this->scroll_to_y += mainMenu_icon_element_size;
+        }else if(frame_y1<0){
+          this->scroll_to_y = frame_y1 - this->scroll_to_y;
+          if (this->scroll_to_y<0) this->scroll_to_y = 0;
+        }
+        
       #endif
         
       //
@@ -204,38 +213,59 @@ void MainMenu::loop(){
       /////////////////////////////////////////  
       // Drawing scroll bar
 
-      #define scroll_y_from   tabletView_statusBarHeight + 12
-      #define scroll_y_to     SCREEN_HEIGHT - 13
+      #define scroll_to_y_from   (tabletView_statusBarHeight + 12)
+      #define scroll_to_y_to     (SCREEN_HEIGHT - 13)
 
-      const int scroll_bar_content_height = (scroll_y_to - scroll_y_from) *((float)content_area_height/(float)content_height);
+      const int scroll_bar_content_height = (scroll_to_y_to - scroll_to_y_from) *((float)content_area_height/(float)content_height);
 
       if (content_height>content_area_height){
         
-        drawIcon( (const unsigned char *)getIcon(ICON_ARROW_UP), SCREEN_WIDTH - mainMenu_scrollSize/2-4 -1, tabletView_statusBarHeight + 8); // Arrow top
+        drawIcon( (const unsigned char *)getIcon(ICON_ARROW_UP), SCREEN_WIDTH - mainMenu_scrollSize/2-4, tabletView_statusBarHeight + 8); // Arrow top
         
         drawLine(
           SCREEN_WIDTH - mainMenu_scrollSize/2-2, 
-          scroll_y_from, 
+          scroll_to_y_from, 
           SCREEN_WIDTH - mainMenu_scrollSize/2-2, 
-          scroll_y_to
+          scroll_to_y_to
         );
   
         drawLine(
           SCREEN_WIDTH - mainMenu_scrollSize/2-0, 
-          scroll_y_from, 
+          scroll_to_y_from, 
           SCREEN_WIDTH - mainMenu_scrollSize/2-0, 
-          scroll_y_to
+          scroll_to_y_to
         );
   
+        const int scrollBar_y_start = scroll_to_y_from + 2;
+        const int scrollBar_y_end = min(scroll_to_y_from + 2 + scroll_bar_content_height-4, scroll_to_y_to - 3);
+        
+        const int scroll_progress = (this-> scroll_to_y * 100) / (mainMenu_icon_element_size * (os_MAINMENU_APP_COUNT/mainMenu_iconsInRow - ( (os_MAINMENU_APP_COUNT%3==0) ?2:1)));
+
+        //Serial.println(scroll_progress);
+        /*
+        Serial.print(this-> scroll_to_y);
+        Serial.print(" , ");
+        Serial.print(mainMenu_icon_element_size * (os_MAINMENU_APP_COUNT/mainMenu_iconsInRow - ( (os_MAINMENU_APP_COUNT%3==0) ?2:1)));
+        Serial.println("");
+        */
+
+        const int full_scrollbar_length = scroll_to_y_to - scroll_to_y_from - 4;
+        const int active_scrollbar_length = scrollBar_y_end - scrollBar_y_start;
+
+        const int scrollBarShift = scroll_progress * (full_scrollbar_length - active_scrollbar_length)/100;
+
+        
+
+        //scroll rect
         drawRect(
           SCREEN_WIDTH - mainMenu_scrollSize/2-3,
-          scroll_y_from + 2, 
+          scrollBarShift + scrollBar_y_start, 
           SCREEN_WIDTH - mainMenu_scrollSize/2+2, 
-          min(scroll_y_from + 2 + scroll_bar_content_height-4, scroll_y_to - 3),
+          scrollBarShift + scrollBar_y_end,
           true
         );
         
-        drawIcon( (const unsigned char *)getIcon(ICON_ARROW_DOWN), SCREEN_WIDTH - mainMenu_scrollSize/2-4 -1 , SCREEN_HEIGHT - 12); // Arrow bottom    
+        drawIcon( (const unsigned char *)getIcon(ICON_ARROW_DOWN), SCREEN_WIDTH - mainMenu_scrollSize/2-4, SCREEN_HEIGHT - 12); // Arrow bottom    
         
       }
       //

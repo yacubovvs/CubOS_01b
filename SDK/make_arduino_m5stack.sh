@@ -1,3 +1,6 @@
+
+clear
+
 rm -R build/arduino/m5stack/cubos/*
 
 cat src/settings/m5stack.ino                        > build/arduino/m5stack/cubos/cubos.ino
@@ -18,7 +21,14 @@ cp src/apps/app_menu.ino                            build/arduino/m5stack/cubos/
 cp src/apps/app_settings.ino                        build/arduino/m5stack/cubos/
 cp src/apps/app_test.ino                            build/arduino/m5stack/cubos/
 cp src/apps/app_game.ino                            build/arduino/m5stack/cubos/
+cp src/apps/app_wificonnect.ino                     build/arduino/m5stack/cubos/
+cp src/apps/app_wifiscan.ino                        build/arduino/m5stack/cubos/
+cp src/apps/app_btscan.ino                          build/arduino/m5stack/cubos/
+cp src/apps/app_battery.ino                         build/arduino/m5stack/cubos/
+cp src/apps/app_www.ino                             build/arduino/m5stack/cubos/
+
 cp src/apps/os_exec_b.ino                           build/arduino/m5stack/cubos/
+
 
 ###########################################################################
 #                                                                         #
@@ -28,6 +38,7 @@ cp src/apps/os_exec_b.ino                           build/arduino/m5stack/cubos/
 
 cp src/os_*.ino                                     build/arduino/m5stack/cubos/
 cp src/libs/driver_display_m5stack.ino              build/arduino/m5stack/cubos/
+cp src/libs/driver_battery.ino                      build/arduino/m5stack/cubos/
 cp src/libs/os_controls_m5stack.ino                 build/arduino/m5stack/cubos/
 cp src/libs/platform_esp32.ino                      build/arduino/m5stack/cubos/
 cp src/libs/driver_sdcard_m5stack.ino               build/arduino/m5stack/cubos/

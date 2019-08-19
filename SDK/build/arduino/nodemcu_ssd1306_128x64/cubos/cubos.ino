@@ -1,10 +1,70 @@
 /*
-    NANO SSD1306 128x64 SETTINGS 
+    ############################################################################################
+    #                                                                                          #
+    #                                     M5STACK SETTINGS                                     #
+    #                                                                                          #
+    ############################################################################################
 */
 
-#define useNativeMenu
+/*
+    ###   #   ##    #   ## ##   ##      
+    # #  # #  # #  # #  # # #  #        #
+    ###  ###  ##   ###  #   #   ##    #####     
+    #    # #  # #  # #  #   #    #      #
+    #    # #  # #  # #  #   #  ##       
+*/
 
-byte current_app = 0x00; // Splashscreen
+#define SCREEN_WIDTH            128     // Note: x-coordinates go wide
+#define SCREEN_HEIGHT           64     // Note: y-coordinates go high
+
+#define FONT_CHAR_WIDTH         6     // Font letter size width
+#define FONT_CHAR_HEIGHT        8     // Font letter size height
+
+#define useNativeMenu                   // Using default app_menu.ino
+#define conf_esp8266_led128             // Name of Mconfiguration
+#define platform_esp                    // Platform
+
+#define hasHardwareButtons              // Conf of controls with hardware btns 
+
+//#define device_has_barometer
+//#define device_has_accelerometer
+
+// #####################################
+// ##           POWER CONTROL           
+#define device_has_power_manager
+
+
+//#define isTouchScreen                 // Conf of controls
+
+//#define tabletView                      // View
+//#define tabletView_statusBarHeight 24   // Height of status bar at top of screen
+
+//#define colorScreen                   // Screen is colored
+//#define noAnimation                     // Caurse of framebuffer type
+#define os_MAINMENU_APP_COUNT 7         // How much apps in menu
+
+//#define mainMenu_iconsInRow 3           // Count of apps in row in tabview in mainMenu
+//#define frame_selected_app_padding 10   // Padding of frame on hardware buttons navigate in menu
+
+//#define mainMenu_scrollSize 16          // Size of scrollbar at right of screen
+//#define mainMenu_icon_element_size ((SCREEN_WIDTH-1)/mainMenu_iconsInRow - mainMenu_scrollSize/mainMenu_iconsInRow)
+
+//#define appArea_margin_top tabletView_statusBarHeight
+
+// Max ram for apllications runs from TFCard
+//#define MAX_RAM_SIZE_FOR_B_APPS 255     //in bytes
+
+/*
+    ###   #   ##    #   ## ##   ##      
+    # #  # #  # #  # #  # # #  #        
+    ###  ###  ##   ###  #   #   ##    #####     
+    #    # #  # #  # #  #   #    #      
+    #    # #  # #  # #  #   #  ##       
+*/
+#ifdef platform_avr
+	#include "libs_h/CyberLib/CyberLib.h"
+#endif
+
 unsigned int dtime = 0;
 
 /*
@@ -18,26 +78,77 @@ unsigned int dtime = 0;
 #define ICON_ARROW_LEFT 	0x02
 #define ICON_ARROW_UP 		0x03
 #define ICON_ARROW_DOWN 	0x04
+#define BATTERY_UNKNOWN		0x05
 
-#define PARAM_TYPE_ICON 0x01
-#define PARAM_TYPE_NAME 0x02
+#define PARAM_TYPE_ICON 	0x01
+#define PARAM_TYPE_NAME 	0x02
+
 
 /////////////////////////////////////
 // APPLICATION CLASS
-class Application{
-	public:
-		int scroll_x	= 0;
-		int scroll_y	= 0;
-		int scroll_to_x			= 0;
-		int scroll_to_y			= 0;
-		virtual void loop()=0;
-		void loop_app(){
-			loop();
+#ifndef do_Not_use_native_apps
+	class Application{
+		public:
+		#ifdef tabletView
+		boolean showStatusBar = false;
+		#endif
+		
+			int scroll_x	      	= 0;
+			int scroll_y	      	= 0;
+			int scroll_to_x			= 0;
+			int scroll_to_y			= 0;
+			virtual void loop() = 0;
+			void loop_app(){
+				loop();
 
+				#ifdef noAnimation
+					scroll_to_x = scroll_x;
+					scroll_y = scroll_to_y;
+				#else
+					int dy=0; int dx =0;
+		
+					if(scroll_x!=scroll_to_x){
+						dx = abs(scroll_x-scroll_to_x)/5 + 2;
+						if(scroll_x>scroll_to_x) dx *= -1;
+						scroll_x+=dx;
+		
+						if (abs(scroll_x-scroll_to_x)<abs(dx)) scroll_to_x=scroll_x;
+					}
+		
+					if(scroll_y!=scroll_to_y){
+						dy = abs(scroll_y-scroll_to_y)/5 + 2;
+						if(scroll_y>scroll_to_y) dy *= -1;
+						scroll_y+=dy;
+				
+						if (abs(scroll_y-scroll_to_y)<abs(dy)) scroll_y=scroll_to_y;
+					}
+				#endif
+			}
+			Application(){};
+	};
+
+	Application* currentApp;
+
+#else
+	int scroll_x	      = 0;
+	int scroll_y	      = 0;
+	int scroll_to_x		  = 0;
+	int scroll_to_y		  = 0;
+
+	void appsetup(){
+		no_native_apps_SETUP();
+	}
+
+	void apploop(){
+
+		#ifdef noAnimation
+			scroll_to_x = scroll_x;
+			scroll_y = scroll_to_y;
+		#else
 			int dy=0; int dx =0;
 
 			if(scroll_x!=scroll_to_x){
-				dx = abs(scroll_x-scroll_to_x)/7 + 2;
+				dx = abs(scroll_x-scroll_to_x)/5 + 2;
 				if(scroll_x>scroll_to_x) dx *= -1;
 				scroll_x+=dx;
 
@@ -45,68 +156,30 @@ class Application{
 			}
 
 			if(scroll_y!=scroll_to_y){
-				dy = abs(scroll_y-scroll_to_y)/7 + 2;
-        if(scroll_y>scroll_to_y) dy *= -1;
-        scroll_y+=dy;
-
-        if (abs(scroll_y-scroll_to_y)<abs(dy)) scroll_y=scroll_to_y;
+				dy = abs(scroll_y-scroll_to_y)/5 + 2;
+				if(scroll_y>scroll_to_y) dy *= -1;
+				scroll_y+=dy;
+		
+				if (abs(scroll_y-scroll_to_y)<abs(dy)) scroll_y=scroll_to_y;
 			}
-		}
-        Application(){};
-};
-
-Application* currentApp;
+		#endif
+		
+		no_native_apps_LOOP();
+	}
+#endif
 //
 /////////////////////////////////////
+
 #ifdef useNativeMenu
-	class MainMenu: public Application{
-			public:
-				virtual void loop() override;
-				void setup();
-				MainMenu(){ setup(); };
-				static unsigned const char* getParams(const unsigned char type){
-						switch(type){ 
-							case PARAM_TYPE_NAME: return (unsigned char*)"Main menu"; 
-							case PARAM_TYPE_ICON: return icon;
-							default: return (unsigned char*)""; }
-				};
-			char* getNextAppName();
-			char* getPreviousAppName();
-			byte* getNextAppIcon();
-			byte* getPreviousAppIcon();
-			byte  checkAppId(char id);
-
-				const static byte icon[] PROGMEM;
-			
-		private:
-			static char current_app_menu;
-	};
-
-	char MainMenu::current_app_menu=0;
-	const byte MainMenu::icon[] PROGMEM= {
-		0xFC, 0xFF, 0xFF, 0x3F, 0xFE, 0xFF, 0xFF, 0x7F, 
-		0xFF, 0xFF, 0x4F, 0xF2, 0xFF, 0xFF, 0x4F, 0xF2, 
-		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
-		0x07, 0x00, 0x00, 0xE0, 0x03, 0x00, 0x00, 0xC0, 
-		0x03, 0x00, 0x00, 0xC0, 0x03, 0x00, 0x00, 0xC0, 
-		0x03, 0x00, 0x00, 0xC0, 0x03, 0x00, 0x00, 0xC0, 
-		0x03, 0x00, 0x00, 0xC0, 0x03, 0x08, 0x00, 0xC0, 
-		0x03, 0x08, 0x01, 0xC0, 0x03, 0x08, 0x00, 0xC0, 
-		0x03, 0x38, 0x1D, 0xC0, 0x03, 0x48, 0x25, 0xC0, 
-		0x03, 0x48, 0x25, 0xC0, 0x03, 0x38, 0x25, 0xC0, 
-		0x03, 0x00, 0x00, 0xC0, 0x03, 0x00, 0x00, 0xC0, 
-		0x03, 0x00, 0x00, 0xC0, 0x03, 0x00, 0x00, 0xC0, 
-		0x03, 0x00, 0x00, 0xC0, 0x03, 0x00, 0x00, 0xC0, 
-		0x03, 0x00, 0x00, 0xC0, 0x03, 0x00, 0x00, 0xC0, 
-		0x03, 0x00, 0x00, 0xC0, 0x07, 0x00, 0x00, 0xE0, 
-		0xFE, 0xFF, 0xFF, 0x7F, 0xFC, 0xFF, 0xFF, 0x3F,
-	};
-
 	Application *getApp(byte i);
 	////////////////////////////////////
 
 	void os_switch_to_app(byte app_numm){
 		delete currentApp;
+		#ifdef colorScreen
+			// for correct drawing background
+			driver_clearScreen();
+		#endif
 		currentApp = getApp(app_numm);
 	}
 #endif
@@ -117,34 +190,89 @@ Application* currentApp;
 *                                    *
 **************************************
 */
+
+#ifdef platform_avr
+	#include <avr/sleep.h>
+#endif
+
 void setup()
 { 
+  #ifdef platform_avr
+	//set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+	//sleep_enable();
+
+	//MCUCR = bit (BODS) | bit (BODSE);
+	//MCUCR = bit (BODS);
+	//sleep_cpu();
+  #endif
+
+  #ifdef device_has_power_manager
+	power_manager_setup();
+  #endif
+
   setup_displayDriver();
 	os_control_setup();
 	//setup_os_menu();
-	#ifdef useNativeMenu
-		currentApp = new MainMenu(); // Start first app
+
+	#ifndef do_Not_use_native_apps
+		#ifdef BOOT_FUNC
+			BOOT_FUNC();
+		#else
+			app_mainmenu_start(); // Start first app
+		#endif
 	#else
-		BOOT_FUNC();
+		no_native_apps_SETUP();
 	#endif
+
+	#ifdef device_has_barometer
+		barometer_setup();
+	#endif
+
+	#ifndef device_has_power_manager
+		#ifdef device_has_accelerometer
+			accelerometer_setup();
+		#endif
+	#else
+		// if device_has_power_manager define - start accelerometer then need
+	#endif
+
 }
 
 void loop(){
 	clearscreen_displayDriver();
+
+	#ifdef tabletView
+    	if (currentApp->showStatusBar) os_draw_statusbar();
+	#endif
+
 	dtime = os_clock_update();
 	
 	os_control_loop(); // Check buttons
-	currentApp->loop_app();
-	
+
+	#ifndef do_Not_use_native_apps
+		currentApp->loop_app();
+	#else
+		no_native_apps_LOOP();
+	#endif
 	
 
-  ////////////////////////////////////////////////////////////////////
-  //  Debug string data
-      showFreeMemory(); // show free memory
-      //drawDebugString(1000/dtime, 10); // show time need for 1 loop
-      //drawDebugString(millis()/1000, 55); // show time need for 1 loop
-  //
-  ////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	//  Debug string data
+      	
+		#ifdef colorScreen
+			setDrawColor_background();
+			drawRect(0,310, 30, 320, true);
+		#endif  
+      	//showFreeMemory(); // show free memory
+      	drawDebugString(dtime, 0); // show time needed for 1 loop
+      	//drawDebugString(1000/dtime, 10); // FPS
+      	//drawDebugString(millis()/1000, 55); // Timer (if you want to know is os freezing)
+
+		#ifdef colorScreen
+			setDrawColor_contrast();
+		#endif  
+  	//
+  	////////////////////////////////////////////////////////////////////
 
   updatescreen_displayDriver();
 }

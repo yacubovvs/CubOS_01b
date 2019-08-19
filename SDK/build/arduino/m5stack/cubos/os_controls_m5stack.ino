@@ -22,9 +22,9 @@ boolean isPressStart(byte num){
   if (num>=os_control_buttons) return false;
   else{
     switch(num){
-        case 0: return M5.BtnA.wasReleased();
-        case 1: return M5.BtnB.wasReleased();
-        case 2: return M5.BtnC.wasReleased();
+        case 0: return M5.BtnA.wasPressed();
+        case 1: return M5.BtnB.wasPressed();
+        case 2: return M5.BtnC.wasPressed();
     }
   } 
 }
@@ -49,9 +49,9 @@ boolean isPress(int num){
   if (num>=os_control_buttons) return false;
   else{
     switch(num){
-        case 0: return M5.BtnA.wasReleased();
-        case 1: return M5.BtnB.wasReleased();
-        case 2: return M5.BtnC.wasReleased();
+        case 0: return M5.BtnA.isPressed();
+        case 1: return M5.BtnB.isPressed();
+        case 2: return M5.BtnC.isPressed();
         default: return false;
     }
   }

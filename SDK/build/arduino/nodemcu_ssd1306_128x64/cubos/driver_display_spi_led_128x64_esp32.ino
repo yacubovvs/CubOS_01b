@@ -19,12 +19,29 @@ Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 #define LCD_WIDTH   128 // Note: x-coordinates go wide
 #define LCD_HEIGHT  64  // Note: y-coordinates go high
 
+const int driver_display_screenWidth = LCD_WIDTH;
+const int driver_display_screenHeight = LCD_HEIGHT;   // RST - Reset, pin 4 on LCD.
+
+const byte driver_display_charHeight  = 8;
+const byte driver_display_charWidth   = 6;
+
 void clearscreen_displayDriver(){
   display.clearDisplay();
 }
 
 void updatescreen_displayDriver(){
   display.display();
+}
+
+boolean currentColor = 1;
+
+void setDrawColor(byte r, byte g, byte b){
+  if (r + g + b > 385) currentColor = 0;
+  else currentColor = 1;
+}
+
+void setDrawColor_contrast(){
+  currentColor = 1;
 }
 
 /*
@@ -49,14 +66,6 @@ void setup_displayDriver(){
    pinMode(D10, INPUT);
 }
 
-void setStr(char * dString, int x, int y){
-  display.setTextColor(WHITE);  //  задаем цвет
-  display.setTextSize(1);  //  задаем шрифт
-  display.setCursor(x,y);  //  задаем координаты курсора
-  display.print(dString);
-}
-
-
 void setPixel(int x, int y){
   setPixel(x, y, false);
 }
@@ -73,4 +82,8 @@ void setPixel(int x, int y, boolean no_limits){
     display.drawPixel(x, y, WHITE);
   }
   
+}
+
+void driver_clearScreen(){
+  display.clearDisplay();
 }

@@ -9,11 +9,19 @@
 //const float pi = 3.141592;
 
 const float get_pi(){
-    #ifdef platform_esp
+    #ifdef platform_m5stack
         return 3.141592;
-    #else
+    #endif
+
+    #ifdef platform_esp8266
+        return 3.141592;
+    #endif
+
+    #ifdef platform_avr
         return pi;
     #endif
+
+    return 3.141592;
 }
 
 char * int_to_char(int val){

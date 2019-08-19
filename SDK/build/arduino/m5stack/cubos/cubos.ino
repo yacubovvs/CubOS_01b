@@ -14,6 +14,8 @@
     #    # #  # #  # #  #   #  ##       
 */
 
+#define debug
+
 #define SCREEN_WIDTH            320     // Note: x-coordinates go wide
 #define SCREEN_HEIGHT           240     // Note: y-coordinates go high
 
@@ -22,7 +24,7 @@
 
 #define useNativeMenu                   // Using default app_menu.ino
 #define conf_m5stack                    // Name of Mconfiguration
-#define platform_esp                    // Platform
+#define platform_m5stack                  // Platform
 
 #define hasHardwareButtons              // Conf of controls with hardware btns    
 //#define isTouchScreen                 // Conf of controls
@@ -31,8 +33,8 @@
 #define tabletView_statusBarHeight 24   // Height of status bar at top of screen
 
 #define colorScreen                   // Screen is colored
-//#define noAnimation                     // Caurse of framebuffer type
-#define os_MAINMENU_APP_COUNT 5         // How much apps in menu
+#define noAnimation                     // Caurse of framebuffer type
+#define os_MAINMENU_APP_COUNT 10         // How much apps in menu
 
 #define mainMenu_iconsInRow 3           // Count of apps in row in tabview in mainMenu
 #define frame_selected_app_padding 10   // Padding of frame on hardware buttons navigate in menu
@@ -52,7 +54,7 @@
     #    # #  # #  # #  #   #    #      
     #    # #  # #  # #  #   #  ##       
 */
-#ifndef conf_m5stack
+#ifdef platform_avr
 	#include "libs_h/CyberLib/CyberLib.h"
 #endif
 
@@ -93,7 +95,7 @@ unsigned int dtime = 0;
 				loop();
 
 				#ifdef noAnimation
-					scroll_to_x = scroll_x;
+					scroll_x = scroll_to_x;
 					scroll_y = scroll_to_y;
 				#else
 					int dy=0; int dx =0;
@@ -113,6 +115,8 @@ unsigned int dtime = 0;
 				
 						if (abs(scroll_y-scroll_to_y)<abs(dy)) scroll_y=scroll_to_y;
 					}
+
+					//Serial.println(scroll_to_y);
 				#endif
 			}
 			Application(){};
@@ -130,31 +134,7 @@ unsigned int dtime = 0;
 		no_native_apps_SETUP();
 	}
 
-	void apploop(){
-
-		#ifdef noAnimation
-			scroll_to_x = scroll_x;
-			scroll_y = scroll_to_y;
-		#else
-			int dy=0; int dx =0;
-
-			if(scroll_x!=scroll_to_x){
-				dx = abs(scroll_x-scroll_to_x)/5 + 2;
-				if(scroll_x>scroll_to_x) dx *= -1;
-				scroll_x+=dx;
-
-				if (abs(scroll_x-scroll_to_x)<abs(dx)) scroll_to_x=scroll_x;
-			}
-
-			if(scroll_y!=scroll_to_y){
-				dy = abs(scroll_y-scroll_to_y)/5 + 2;
-				if(scroll_y>scroll_to_y) dy *= -1;
-				scroll_y+=dy;
-		
-				if (abs(scroll_y-scroll_to_y)<abs(dy)) scroll_y=scroll_to_y;
-			}
-		#endif
-		
+	void apploop(){		
 		no_native_apps_LOOP();
 	}
 #endif
@@ -181,8 +161,30 @@ unsigned int dtime = 0;
 *                                    *
 **************************************
 */
+
+#ifdef platform_avr
+	#include <avr/sleep.h>
+#endif
+
 void setup()
 { 
+  #ifdef debug
+	Serial.begin(115200);
+  #endif
+
+  #ifdef platform_avr
+	//set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+	//sleep_enable();
+
+	//MCUCR = bit (BODS) | bit (BODSE);
+	//MCUCR = bit (BODS);
+	//sleep_cpu();
+  #endif
+
+  #ifdef device_has_power_manager
+	power_manager_setup();
+  #endif
+
   setup_displayDriver();
 	os_control_setup();
 	//setup_os_menu();
@@ -195,6 +197,18 @@ void setup()
 		#endif
 	#else
 		no_native_apps_SETUP();
+	#endif
+
+	#ifdef device_has_barometer
+		barometer_setup();
+	#endif
+
+	#ifndef device_has_power_manager
+		#ifdef device_has_accelerometer
+			accelerometer_setup();
+		#endif
+	#else
+		// if device_has_power_manager define - start accelerometer then need
 	#endif
 
 }
@@ -217,17 +231,23 @@ void loop(){
 	#endif
 	
 
-////////////////////////////////////////////////////////////////////
-  //  Debug string data
-      setDrawColor_background();
-      drawRect(0,310, 30, 320, true);
-      setDrawColor_contrast();
-      //showFreeMemory(); // show free memory
-      drawDebugString(dtime, 310); // show time need for 1 loop
-      //drawDebugString(1000/dtime, 10); // FPS
-      //drawDebugString(millis()/1000, 55); // Timer (if you want to know is os freezing)
-  //
-  ////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	//  Debug string data
+      	
+		#ifdef colorScreen
+			setDrawColor_background();
+			drawRect(0,310, 30, 320, true);
+		#endif  
+      	//showFreeMemory(); // show free memory
+      	//drawDebugString(dtime, 0); // show time needed for 1 loop
+      	//drawDebugString(1000/dtime, 10); // FPS
+      	//drawDebugString(millis()/1000, 55); // Timer (if you want to know is os freezing)
+
+		#ifdef colorScreen
+			setDrawColor_contrast();
+		#endif  
+  	//
+  	////////////////////////////////////////////////////////////////////
 
   updatescreen_displayDriver();
 }

@@ -14,6 +14,8 @@
     #    # #  # #  # #  #   #  ##       
 */
 
+#define debug
+
 #define SCREEN_WIDTH            320     // Note: x-coordinates go wide
 #define SCREEN_HEIGHT           240     // Note: y-coordinates go high
 
@@ -22,7 +24,7 @@
 
 #define useNativeMenu                   // Using default app_menu.ino
 #define conf_m5stack                    // Name of Mconfiguration
-#define platform_esp                    // Platform
+#define platform_m5stack                  // Platform
 
 #define hasHardwareButtons              // Conf of controls with hardware btns    
 //#define isTouchScreen                 // Conf of controls
@@ -31,8 +33,8 @@
 #define tabletView_statusBarHeight 24   // Height of status bar at top of screen
 
 #define colorScreen                   // Screen is colored
-//#define noAnimation                     // Caurse of framebuffer type
-#define os_MAINMENU_APP_COUNT 5         // How much apps in menu
+#define noAnimation                     // Caurse of framebuffer type
+#define os_MAINMENU_APP_COUNT 10         // How much apps in menu
 
 #define mainMenu_iconsInRow 3           // Count of apps in row in tabview in mainMenu
 #define frame_selected_app_padding 10   // Padding of frame on hardware buttons navigate in menu

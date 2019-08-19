@@ -9,11 +9,19 @@
 //const float pi = 3.141592;
 
 const float get_pi(){
-    #ifdef platform_esp
+    #ifdef platform_m5stack
         return 3.141592;
-    #else
+    #endif
+
+    #ifdef platform_esp8266
+        return 3.141592;
+    #endif
+
+    #ifdef platform_avr
         return pi;
     #endif
+
+    return 3.141592;
 }
 
 char * int_to_char(int val){
@@ -32,7 +40,7 @@ void os_draw_statusbar(){
         //Background
         #ifdef framebuffer_linearhash
           setDrawColor(0x06, 0x07, 0x10);
-          drawRect(0, 0, SCREEN_WIDTH, tabletView_statusBarHeight, true);
+          //drawRect(0, 0, SCREEN_WIDTH, tabletView_statusBarHeight, true);
           setDrawColor_contrast();
         #endif
     

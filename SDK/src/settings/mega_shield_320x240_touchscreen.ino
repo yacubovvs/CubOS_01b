@@ -32,7 +32,7 @@
 
 #define colorScreen                   
 #define noAnimation                     // Caurse of framebuffer type
-#define os_MAINMENU_APP_COUNT 4     //How much apps in menu
+#define os_MAINMENU_APP_COUNT 5     //How much apps in menu
 
 #define mainMenu_iconsInRow     3
 
