@@ -54,8 +54,63 @@ void os_draw_statusbar(){
         drawString(time_string, 8, (tabletView_statusBarHeight - FONT_CHAR_HEIGHT)/2-1);
 
         // Battery 
-        drawIcon((const unsigned char *)getIcon(BATTERY_UNKNOWN), SCREEN_WIDTH - 32, 6);
+        #ifdef device_has_battery
+            byte battery_chargeLevel = driver_battery_updateChargeLevel();
 
+            if(battery_chargeLevel==-1){    
+                drawIcon((const unsigned char *)getIcon(BATTERY_UNKNOWN), SCREEN_WIDTH - 32, 6);
+            }if(battery_chargeLevel<5){
+                drawIcon((const unsigned char *)getIcon(BATTERY_0), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<10){
+                drawIcon((const unsigned char *)getIcon(BATTERY_10), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<20){
+                drawIcon((const unsigned char *)getIcon(BATTERY_20), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<30){
+                drawIcon((const unsigned char *)getIcon(BATTERY_30), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<40){
+                drawIcon((const unsigned char *)getIcon(BATTERY_40), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<50){
+                drawIcon((const unsigned char *)getIcon(BATTERY_50), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<60){
+                drawIcon((const unsigned char *)getIcon(BATTERY_60), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<70){
+                drawIcon((const unsigned char *)getIcon(BATTERY_70), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<80){
+                drawIcon((const unsigned char *)getIcon(BATTERY_80), SCREEN_WIDTH - 32, 6);
+            }else if(battery_chargeLevel<90){
+                drawIcon((const unsigned char *)getIcon(BATTERY_90), SCREEN_WIDTH - 32, 6);
+            }else{
+                drawIcon((const unsigned char *)getIcon(BATTERY_100), SCREEN_WIDTH - 32, 6);
+            }
+
+        #endif
+
+        // WIFI
+        #ifdef device_has_wifi
+            if (driver_wifi_isPowerOn()){
+                if (driver_wifi_isConnected()){
+                    drawIcon((const unsigned char *)getIcon(WIFI_CONNECTED), SCREEN_WIDTH - 32 - 16, 6);
+                }else{
+                    drawIcon((const unsigned char *)getIcon(WIFI_NOTCONNECTED), SCREEN_WIDTH - 32 - 16, 6);
+                }
+            }else{
+                drawIcon((const unsigned char *)getIcon(WIFI_OFF), SCREEN_WIDTH - 32 - 16, 6);
+            }
+        #endif
+
+        // Bluetooth
+        #ifdef device_has_bluetooth
+            if (driver_bt_isPowerOn()){
+                if (driver_bt_isConnected()){
+                    drawIcon((const unsigned char *)getIcon(BT_CONNECTED), SCREEN_WIDTH - 32 - 16*2, 6);
+                }else{
+                    drawIcon((const unsigned char *)getIcon(BT_NOTCONNECTED), SCREEN_WIDTH - 32 - 16*2, 6);
+                }
+            }else{
+                drawIcon((const unsigned char *)getIcon(BT_OFF), SCREEN_WIDTH - 32 - 16*2, 6);
+            }
+        #endif
+        
 
         //FRAME
         drawRect(0, tabletView_statusBarHeight ,SCREEN_WIDTH-1, tabletView_statusBarHeight-2, true);

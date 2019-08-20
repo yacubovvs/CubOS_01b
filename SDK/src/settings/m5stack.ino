@@ -24,7 +24,12 @@
 
 #define useNativeMenu                   // Using default app_menu.ino
 #define conf_m5stack                    // Name of Mconfiguration
-#define platform_m5stack                  // Platform
+#define platform_m5stack                // Platform
+
+#define device_has_battery
+
+#define device_has_bluetooth
+#define device_has_wifi
 
 #define hasHardwareButtons              // Conf of controls with hardware btns    
 //#define isTouchScreen                 // Conf of controls

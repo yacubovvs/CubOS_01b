@@ -34,13 +34,9 @@ class appNameClass: public Application{
             */
 
             //EVERY FRAME CODE
-            int batter_val = 0;
-
-            for (int i=0; i<100; i++){
-              batter_val += readVcc();
-            }
-
-            batter_val /= 100;
+            
+            byte batter_val = driver_battery_updateChargeLevel(); 
+            
 
             drawString("Battery vol.",6, margint_top + 10);
             drawDebugString(batter_val, margint_top + 20); // show time needed for 1 loop

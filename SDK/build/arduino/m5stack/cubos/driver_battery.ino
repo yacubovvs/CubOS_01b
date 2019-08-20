@@ -11,7 +11,28 @@
   
 #endif
 
-int readVcc() {
+byte driver_battery_value = 0;
+
+char driver_battery_updateChargeLevel(){
+    driver_battery_value = 0;
+
+    #ifdef platform_avr
+        for (char i=0; i<100; i++){
+            driver_battery_value += driver_battery_readChargeLevel();
+        }
+
+        driver_battery_value /= 100;
+    #else
+        driver_battery_value = driver_battery_readChargeLevel();
+    #endif
+
+    return driver_battery_value;
+}
+
+byte driver_battery_getChargeLevel(){
+    return driver_battery_value;
+}
+byte driver_battery_readChargeLevel() {
     
     #ifdef platform_avr
         // Read 1.1V reference against AVcc

@@ -38,6 +38,8 @@ cp src/apps/os_exec_b.ino                           build/arduino/m5stack/cubos/
 
 cp src/os_*.ino                                     build/arduino/m5stack/cubos/
 cp src/libs/driver_display_m5stack.ino              build/arduino/m5stack/cubos/
+cp src/libs/driver_bluetooth.ino                    build/arduino/m5stack/cubos/
+cp src/libs/driver_wifi.ino                         build/arduino/m5stack/cubos/
 cp src/libs/driver_battery.ino                      build/arduino/m5stack/cubos/
 cp src/libs/os_controls_m5stack.ino                 build/arduino/m5stack/cubos/
 cp src/libs/platform_esp32.ino                      build/arduino/m5stack/cubos/

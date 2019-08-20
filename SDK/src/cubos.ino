@@ -18,6 +18,25 @@ unsigned int dtime = 0;
 #define ICON_ARROW_DOWN 	0x04
 #define BATTERY_UNKNOWN		0x05
 
+#define BATTERY_100			0x06
+#define BATTERY_90			0x07
+#define BATTERY_80			0x08
+#define BATTERY_70			0x09
+#define BATTERY_60			0x0A
+#define BATTERY_50			0x0B
+#define BATTERY_40			0x0C
+#define BATTERY_30			0x0D
+#define BATTERY_20			0x0E
+#define BATTERY_10			0x0F
+#define BATTERY_0			0x10
+
+#define WIFI_CONNECTED		0x11
+#define WIFI_NOTCONNECTED	0x12
+#define WIFI_OFF			0x13
+#define BT_CONNECTED		0x14
+#define BT_NOTCONNECTED		0x15
+#define BT_OFF				0x16
+
 #define PARAM_TYPE_ICON 	0x01
 #define PARAM_TYPE_NAME 	0x02
 
