@@ -14,7 +14,7 @@
  */
 
 #define appNameClass    Wificonnect         // App name without spaces
-#define appName         "WiFi"      // App name with spaces (max 8)
+#define appName         "WiFi"      // App name with spaces 
 
 class appNameClass: public Application{
     public:

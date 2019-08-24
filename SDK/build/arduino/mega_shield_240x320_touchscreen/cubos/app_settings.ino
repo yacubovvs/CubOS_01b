@@ -13,7 +13,7 @@ case 9: return "1 hour";
 */
 
 #define appNameClass    SettingApp         // App name without spaces
-#define appName         "Settings"         // App name with spaces (max 8)
+#define appName         "Settings"         // App name with spaces 
 
 class appNameClass: public Application{
     public:

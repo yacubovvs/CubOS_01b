@@ -14,7 +14,7 @@
  */
 
 #define appNameClass    Barometer         // App name without spaces
-#define appName         "Barometer"      // App name with spaces (max 8)
+#define appName         "Barometer"      // App name with spaces 
 
 class appNameClass: public Application{
     public:

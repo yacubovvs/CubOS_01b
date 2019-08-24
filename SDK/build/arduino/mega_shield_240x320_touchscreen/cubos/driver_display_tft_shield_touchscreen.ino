@@ -10,6 +10,18 @@ UTFTGLUE myGLCD(0,A2,A1,A3,A4,A0);
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 */
 
+int drawLimit_x_min = 0;
+int drawLimit_y_min = 0;
+int drawLimit_x_max = SCREEN_WIDTH;
+int drawLimit_y_max = SCREEN_HEIGHT;
+
+void set_DrawLimits(int min_x, int min_y, int max_x, int max_y){
+  drawLimit_x_min = min_x;
+  drawLimit_y_min = min_y;
+  drawLimit_x_max = max_x;
+  drawLimit_y_max = max_y;
+}
+
 LINEARHASH_TYPE linear_framebuffer_x[SCREEN_WIDTH/LINEARHASH_FRAMEBUFFER_PIXEL_SIZE];   // Low memory hash framebuffer idea by Yacubov Vitaly
 LINEARHASH_TYPE linear_framebuffer_y[SCREEN_HEIGHT/LINEARHASH_FRAMEBUFFER_PIXEL_SIZE];  // Low memory hash framebuffer idea by Yacubov Vitaly
 LINEARHASH_TYPE linear_framebuffer_x2[SCREEN_WIDTH/LINEARHASH_FRAMEBUFFER_PIXEL_SIZE];   // Low memory hash framebuffer idea by Yacubov Vitaly
@@ -96,6 +108,8 @@ void driver_clearScreen(){
 
 void clearscreen_displayDriver(){
 
+  set_DrawLimits(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
   if (get_os_auto_redraw_screen()){
     setDrawColor_background();
     
@@ -129,7 +143,18 @@ void updatescreen_displayDriver(){
 }
 
 void setPixel(int x, int y){
-  if(x>=0 && y>=0 && x<SCREEN_WIDTH && y<SCREEN_HEIGHT){
+  if(
+      x>=drawLimit_x_min  &&
+      y>=drawLimit_y_min  &&
+      x<drawLimit_x_max   &&
+      y<drawLimit_y_max   &&
+      
+      x>=0 && 
+      y>=0 && 
+      x<SCREEN_WIDTH && 
+      y<SCREEN_HEIGHT
+    ){
+
     if ( !get_os_auto_redraw_screen() || (linear_framebuffer_y[y/LINEARHASH_FRAMEBUFFER_PIXEL_SIZE]!=linear_framebuffer_y2[y/LINEARHASH_FRAMEBUFFER_PIXEL_SIZE] && linear_framebuffer_x[x/LINEARHASH_FRAMEBUFFER_PIXEL_SIZE]!=linear_framebuffer_x2[x/LINEARHASH_FRAMEBUFFER_PIXEL_SIZE])) 
       myGLCD.drawPixel(x,y);
 

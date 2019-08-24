@@ -46,7 +46,7 @@
 #define SDCARD_FILE_READ_BUFFER_SIZE 16 // Size of buffer for reading B files (16 bytes - works x2 faster thаn 1byte. Best choice for uno)
 
 #define framebuffer_linearhash //Type of frame buffer
-
+#define BOOT_FUNC TouchCalibration_bootFunc
 /*
 
     ########################################################################

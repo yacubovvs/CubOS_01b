@@ -32,7 +32,7 @@
 
 #define colorScreen                   
 #define noAnimation                     // Caurse of framebuffer type
-#define os_MAINMENU_APP_COUNT 4     //How much apps in menu
+#define os_MAINMENU_APP_COUNT 5     //How much apps in menu
 
 #define mainMenu_iconsInRow     3
 
@@ -46,7 +46,7 @@
 #define SDCARD_FILE_READ_BUFFER_SIZE 16 // Size of buffer for reading B files (16 bytes - works x2 faster thаn 1byte. Best choice for uno)
 
 #define framebuffer_linearhash //Type of frame buffer
-
+#define BOOT_FUNC TouchCalibration_bootFunc
 /*
 
     ########################################################################
@@ -70,7 +70,7 @@
     #    # #  # #  # #  #   #  ##       
 */
 
-#ifndef conf_m5stack
+#ifdef platform_avr
 	#include "libs_h/CyberLib/CyberLib.h"
 #endif
 
@@ -88,6 +88,25 @@ unsigned int dtime = 0;
 #define ICON_ARROW_UP 		0x03
 #define ICON_ARROW_DOWN 	0x04
 #define BATTERY_UNKNOWN		0x05
+
+#define BATTERY_100			0x06
+#define BATTERY_90			0x07
+#define BATTERY_80			0x08
+#define BATTERY_70			0x09
+#define BATTERY_60			0x0A
+#define BATTERY_50			0x0B
+#define BATTERY_40			0x0C
+#define BATTERY_30			0x0D
+#define BATTERY_20			0x0E
+#define BATTERY_10			0x0F
+#define BATTERY_0			0x10
+
+#define WIFI_CONNECTED		0x11
+#define WIFI_NOTCONNECTED	0x12
+#define WIFI_OFF			0x13
+#define BT_CONNECTED		0x14
+#define BT_NOTCONNECTED		0x15
+#define BT_OFF				0x16
 
 #define PARAM_TYPE_ICON 	0x01
 #define PARAM_TYPE_NAME 	0x02
@@ -111,7 +130,7 @@ unsigned int dtime = 0;
 				loop();
 
 				#ifdef noAnimation
-					scroll_to_x = scroll_x;
+					scroll_x = scroll_to_x;
 					scroll_y = scroll_to_y;
 				#else
 					int dy=0; int dx =0;
@@ -131,6 +150,8 @@ unsigned int dtime = 0;
 				
 						if (abs(scroll_y-scroll_to_y)<abs(dy)) scroll_y=scroll_to_y;
 					}
+
+					//Serial.println(scroll_to_y);
 				#endif
 			}
 			Application(){};
@@ -148,31 +169,7 @@ unsigned int dtime = 0;
 		no_native_apps_SETUP();
 	}
 
-	void apploop(){
-
-		#ifdef noAnimation
-			scroll_to_x = scroll_x;
-			scroll_y = scroll_to_y;
-		#else
-			int dy=0; int dx =0;
-
-			if(scroll_x!=scroll_to_x){
-				dx = abs(scroll_x-scroll_to_x)/5 + 2;
-				if(scroll_x>scroll_to_x) dx *= -1;
-				scroll_x+=dx;
-
-				if (abs(scroll_x-scroll_to_x)<abs(dx)) scroll_to_x=scroll_x;
-			}
-
-			if(scroll_y!=scroll_to_y){
-				dy = abs(scroll_y-scroll_to_y)/5 + 2;
-				if(scroll_y>scroll_to_y) dy *= -1;
-				scroll_y+=dy;
-		
-				if (abs(scroll_y-scroll_to_y)<abs(dy)) scroll_y=scroll_to_y;
-			}
-		#endif
-		
+	void apploop(){		
 		no_native_apps_LOOP();
 	}
 #endif
@@ -206,6 +203,10 @@ unsigned int dtime = 0;
 
 void setup()
 { 
+  #ifdef debug
+	Serial.begin(115200);
+  #endif
+
   #ifdef platform_avr
 	//set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 	//sleep_enable();
@@ -273,7 +274,7 @@ void loop(){
 			drawRect(0,310, 30, 320, true);
 		#endif  
       	//showFreeMemory(); // show free memory
-      	drawDebugString(dtime, 0); // show time needed for 1 loop
+      	//drawDebugString(dtime, 0); // show time needed for 1 loop
       	//drawDebugString(1000/dtime, 10); // FPS
       	//drawDebugString(millis()/1000, 55); // Timer (if you want to know is os freezing)
 

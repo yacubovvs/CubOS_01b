@@ -14,7 +14,7 @@
  */
 
 #define appNameClass    WWW         // App name without spaces
-#define appName         "WWW"      // App name with spaces (max 8)
+#define appName         "WWW"      // App name with spaces 
 
 class appNameClass: public Application{
     public:

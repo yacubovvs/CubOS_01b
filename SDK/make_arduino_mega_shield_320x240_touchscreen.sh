@@ -1,3 +1,4 @@
+clear
 rm -R build/arduino/mega_shield_240x320_touchscreen/cubos/*
 
 cat src/settings/mega_shield_320x240_touchscreen.ino            > build/arduino/mega_shield_240x320_touchscreen/cubos/cubos.ino
@@ -17,6 +18,7 @@ cp src/apps/app_sdcard_manager.ino                              build/arduino/me
 cp src/apps/app_menu.ino                                        build/arduino/mega_shield_240x320_touchscreen/cubos/
 cp src/apps/app_settings.ino                                    build/arduino/mega_shield_240x320_touchscreen/cubos/
 cp src/apps/app_test.ino                                        build/arduino/mega_shield_240x320_touchscreen/cubos/
+cp src/apps/app_calibration_touch.ino                           build/arduino/mega_shield_240x320_touchscreen/cubos/
 
 ############################################################################
 #                                                                          #
@@ -30,7 +32,7 @@ cp src/libs/driver_display_tft_shield_touchscreen.ino           build/arduino/me
 
 cp src/libs/driver_controls_tft_shield_touchscreen.ino          build/arduino/mega_shield_240x320_touchscreen/cubos/
 
-cp src/libs/driver_sdcard_mega_shield320x240.ino                build/arduino/mega_shield_240x320_touchscreen/cubos/
+cp src/libs/driver_sdcard_mega_shield.ino                       build/arduino/mega_shield_240x320_touchscreen/cubos/
 
 cp src/libs/platform_avr.ino                                    build/arduino/mega_shield_240x320_touchscreen/cubos/
 

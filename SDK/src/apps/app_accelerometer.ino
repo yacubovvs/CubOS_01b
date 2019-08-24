@@ -14,7 +14,7 @@
  */
 
 #define appNameClass    Accelerometer         // App name without spaces
-#define appName         "Accel test"      // App name with spaces (max 8)
+#define appName         "Accel test"      // App name with spaces 
 
 class appNameClass: public Application{
     public:

@@ -14,7 +14,7 @@
  */
 
 #define appNameClass    TestApp         // App name without spaces
-#define appName         "Test app"      // App name with spaces (max 8)
+#define appName         "Test app"      // App name with spaces 
 
 class appNameClass: public Application{
     public:

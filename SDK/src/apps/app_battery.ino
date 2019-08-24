@@ -14,7 +14,7 @@
  */
 
 #define appNameClass    Battery         // App name without spaces
-#define appName         "Battery"      // App name with spaces (max 8)
+#define appName         "Battery"      // App name with spaces 
 
 #ifdef tabletView
     #define margint_top tabletView_statusBarHeight

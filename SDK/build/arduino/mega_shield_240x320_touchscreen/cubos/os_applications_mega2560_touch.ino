@@ -13,6 +13,7 @@
         if (i==1) return new SettingApp;
         if (i==2) return new TestApp;
         if (i==3) return new SDAppManager;
+        if (i==4) return new TouchCalibration;
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ADD YOUR APP HERE
         else return new MainMenu;
     }
@@ -26,6 +27,8 @@
             TestApp *app; return ((*app).getParams(type));
         }else if(i==3){
             SDAppManager *app; return ((*app).getParams(type));
+        }else if(i==4){
+            TouchCalibration *app; return ((*app).getParams(type));
         }
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ADD YOUR APP HERE
         else{
