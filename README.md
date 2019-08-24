@@ -1,5 +1,5 @@
 # CubOS
-Small OS for wearable devices, embedded systems and DIY projects
+Small OS for Arduino devices, embedded systems and DIY projects
 
 About project:
 http://cubos.ru/
