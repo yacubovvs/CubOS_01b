@@ -33,6 +33,14 @@ void updatescreen_displayDriver(){
   display.display();
 }
 
+void display_driver_power_off(){
+  display.ssd1306_command(SSD1306_DISPLAYOFF);
+}
+
+void display_driver_power_on(){
+  display.ssd1306_command(SSD1306_DISPLAYON);
+}
+
 boolean currentColor = 1;
 
 void setDrawColor(byte r, byte g, byte b){

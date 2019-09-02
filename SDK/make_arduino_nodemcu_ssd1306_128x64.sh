@@ -45,9 +45,10 @@ cp src/os_icons.ino                                             build/arduino/no
 
 cp src/libs/driver_display_spi_led_128x64_esp32.ino             build/arduino/nodemcu_ssd1306_128x64/cubos/
 cp src/libs/driver_powermanager.ino                             build/arduino/nodemcu_ssd1306_128x64/cubos/
-cp src/libs/driver_wifi_esp8266.ino                             build/arduino/nodemcu_ssd1306_128x64/cubos/
+cp src/libs/driver_wifi.ino                                     build/arduino/nodemcu_ssd1306_128x64/cubos/
+cp src/libs/driver_battery.ino                                     build/arduino/nodemcu_ssd1306_128x64/cubos/
 
-cp src/libs/os_controls_nodemcu.ino                             build/arduino/nodemcu_ssd1306_128x64/cubos/
+cp src/libs/driver_controls_nodemcu_minipc.ino                  build/arduino/nodemcu_ssd1306_128x64/cubos/
 
 cp src/libs/platform_esp32.ino                                  build/arduino/nodemcu_ssd1306_128x64/cubos/
 

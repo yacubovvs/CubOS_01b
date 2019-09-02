@@ -1,7 +1,7 @@
 /*
     ############################################################################################
     #                                                                                          #
-    #                                     M5STACK SETTINGS                                     #
+    #                                 NODEMCU MINI PC SETTINGS                                 #
     #                                                                                          #
     ############################################################################################
 */
@@ -32,6 +32,11 @@
 // #####################################
 // ##           POWER CONTROL           
 #define device_has_power_manager
+#define device_can_sleep
+
+#define control_buttons_pins {D0, D4, D10, D3, D6, D9}
+#define control_buttons_amount 6
+#define control_buttons_on_LOW_level
 
 
 //#define isTouchScreen                 // Conf of controls

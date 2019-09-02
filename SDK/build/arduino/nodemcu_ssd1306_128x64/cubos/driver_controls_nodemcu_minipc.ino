@@ -8,7 +8,7 @@
 const byte os_control_buttons = 6; 
 
 // Buttons address
-const int os_control_buttonsAdr[] = {D0, D4, D10, D3, D6, D9};
+const int os_control_buttonsAdr[] = control_buttons_pins;
 
 
 // Do not change:
@@ -16,7 +16,19 @@ boolean os_control_pressStart[] = {false, false, false, false, false, false};
 boolean os_control_pressEnd[]   = {false, false, false, false, false, false};
 boolean os_control_press[]      = {false, false, false, false, false, false};
 
+long last_user_activity = 0;
 
+long os_control_get_last_user_avtivity(){
+  return last_user_activity;
+}
+
+void os_control_check_last_user_avtivity(){
+  for (byte i=0; i<os_control_buttons; i++){
+    if (digitalRead(os_control_buttonsAdr[i])){
+      last_user_activity = millis();
+    }
+  }
+}
 /*
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
   HENDLER
@@ -57,6 +69,8 @@ void os_control_loop(){
   
   for (byte i=0; i<os_control_buttons; i++){
     if (!digitalRead(os_control_buttonsAdr[i])){
+      last_user_activity = millis();
+      
       if(os_control_pressStart[i]){
         // 2-nd loop after press
         os_control_pressStart[i]  = false;

@@ -1,4 +1,6 @@
 #ifdef device_can_sleep
+    boolean isInFullSleep = false;
+
     #ifdef platform_esp8266
 
         #include <ESP8266WiFi.h> 
@@ -45,16 +47,22 @@
             wifi_fpm_set_wakeup_cb(wake_cb);
             
             PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,3);
-            
-            gpio_pin_wakeup_enable(12, GPIO_PIN_INTR_HILEVEL);
-            gpio_pin_wakeup_enable(13, GPIO_PIN_INTR_HILEVEL);
-            gpio_pin_wakeup_enable(14, GPIO_PIN_INTR_HILEVEL);
 
-            wifi_fpm_set_wakeup_cb(wake_cb); // Set wakeup callback
+            for(byte i=0; i<control_buttons_amount; i++){
+                const int btns_pins[] = control_buttons_pins;
+                #ifdef control_buttons_on_LOW_level
+                    gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_LOLEVEL);    
+                #else
+                    gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_LOLEVEL);    
+                #endif
+            }
+            
+            //gpio_pin_wakeup_enable(12, GPIO_PIN_INTR_HILEVEL);
+
+            wifi_fpm_set_wakeup_cb(wake_cb); 
             
             wifi_fpm_do_sleep(time*1000);
             delay (time);
-            // ~7ma for 15 seconds, then ~22ma for 15 seconds (75ma for 15 seconds without forcesleepbegin in callback)
 
         }
 
@@ -65,9 +73,9 @@
 
             if(isInFullSleep){
                 isInFullSleep = false;
-                #ifdef display_i2c_ssd1306
+                //#ifdef display_i2c_ssd1306
                     display_driver_power_on();
-                #endif
+                //#endif
             }
 
             wifi_set_sleep_type(LIGHT_SLEEP_T);
@@ -83,9 +91,9 @@
               //os_control_check_last_user_avtivity
               if(!isInFullSleep){
                   isInFullSleep = true;
-                  #ifdef display_i2c_ssd1306
+                  //#ifdef display_i2c_ssd1306
                     display_driver_power_off();
-                  #endif
+                  //#endif
               }
               os_control_loop();
               driver_powerManager_GoSleep(100);

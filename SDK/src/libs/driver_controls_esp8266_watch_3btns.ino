@@ -24,8 +24,6 @@ void os_control_check_last_user_avtivity(){
   }
 }
 
-boolean isInFullSleep = false;
-
 // Do not change:
 boolean os_control_pressStart[] = {false, false, false};
 boolean os_control_pressEnd[]   = {false, false, false};
