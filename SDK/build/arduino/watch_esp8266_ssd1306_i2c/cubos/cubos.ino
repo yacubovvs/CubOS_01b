@@ -14,33 +14,27 @@
     #    # #  # #  # #  #   #  ##       
 */
 
-#define SCREEN_WIDTH            128     // Note: x-coordinates go wide
-#define SCREEN_HEIGHT           64     // Note: y-coordinates go high
+#define SCREEN_WIDTH            84     // Note: x-coordinates go wide
+#define SCREEN_HEIGHT           48     // Note: y-coordinates go high
 
 #define FONT_CHAR_WIDTH         6     // Font letter size width
 #define FONT_CHAR_HEIGHT        8     // Font letter size height
 
 #define useNativeMenu                   // Using default app_menu.ino
-#define conf_esp8266_nokia_watch        // Name of Mconfiguration
-#define platform_esp8266                // Platform
+#define conf_atm328_nokia_watch         // Name of Mconfiguration
+#define platform_avr                    // Platform
 
 #define hasHardwareButtons              // Conf of controls with hardware btns 
 
-#define display_i2c_ssd1306
-
-//#define device_has_barometer
-//#define device_has_accelerometer
-
-#define device_has_vibro
-#define device_vibro_pin 16
+#define device_has_barometer
+#define device_has_accelerometer
 
 // #####################################
 // ##           POWER CONTROL           
 #define device_has_power_manager
-#define device_can_sleep
 
-//#define device_has_backlight_control
-//#define backlight_init 128
+#define device_has_backlight_control
+#define backlight_init 128
 
 
 //#define isTouchScreen                 // Conf of controls
@@ -50,7 +44,7 @@
 
 //#define colorScreen                   // Screen is colored
 //#define noAnimation                     // Caurse of framebuffer type
-#define os_MAINMENU_APP_COUNT 5         // How much apps in menu
+#define os_MAINMENU_APP_COUNT 7         // How much apps in menu
 
 //#define mainMenu_iconsInRow 3           // Count of apps in row in tabview in mainMenu
 //#define frame_selected_app_padding 10   // Padding of frame on hardware buttons navigate in menu
