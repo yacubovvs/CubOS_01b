@@ -101,8 +101,14 @@
         #endif
 
         #ifdef conf_atm328_nokia_watch
-            if(abs(millis() - os_control_get_last_user_avtivity())>5000 ){
-                
+            if(abs(millis() - os_control_get_last_user_avtivity())>get_delay_before_turnoffBackLight()*1000 && os_control_get_last_user_avtivity()!=-1 ){
+                #ifdef device_has_backlight_control
+                    power_manager_set_backlight_strength(0);
+                #endif
+            }else{
+                #ifdef device_has_backlight_control
+                    power_manager_set_backlight_strength(get_backlight_light());
+                #endif
             }
         #endif
     }

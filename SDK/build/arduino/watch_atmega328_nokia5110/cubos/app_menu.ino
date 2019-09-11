@@ -393,7 +393,7 @@ void MainMenu::loop(){
       }   
 
       #ifdef conf_atm328_nokia_watch
-          if(abs(millis() - os_control_get_last_user_avtivity())>20000 ){
+          if(abs(millis() - os_control_get_last_user_avtivity())>get_delay_before_turnoff()*1000 && get_delay_before_turnoff()!=-1 ){
             os_switch_to_app(0); // to watch widget
           }
       #endif
