@@ -345,12 +345,35 @@ void MainMenu::loop(){
        */
       #ifdef conf_atm328_nokia_watch
         
+       
+        byte battery_icon = 0;
+        switch(driver_battery_updateChargeLevel()){
+          case 100:   
+            battery_icon = BATTERY_100;
+            break;
+          case 80:   
+            battery_icon = BATTERY_80;
+            break;
+          case 60:   
+            battery_icon = BATTERY_60;
+            break;
+          case 40:   
+            battery_icon = BATTERY_40;
+            break;
+          case 20:   
+            battery_icon = BATTERY_20;
+            break;
+          case 0:   
+            battery_icon = BATTERY_0;
+            break;
+        }
+
         drawIcon(
-          (const unsigned char *)getIcon(BATTERY_60),
+          (const unsigned char *)getIcon(battery_icon),
           SCREEN_WIDTH - 8,
           0
         );
-        //drawString("Right",1,1);
+       
       #endif
 
       //Check buttons events

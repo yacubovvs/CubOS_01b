@@ -1,3 +1,5 @@
+#define SCREEN_CENTER_X (SCREEN_WIDTH/2)
+#define SCREEN_CENTER_Y (SCREEN_HEIGHT/2)
 
 #ifdef platform_avr
 	#include "libs_h/CyberLib/CyberLib.h"

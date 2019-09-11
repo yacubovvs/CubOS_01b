@@ -16,6 +16,7 @@
         if (i==4) return new Barometer;
         if (i==5) return new Accelerometer;
         if (i==6) return new Battery;
+        if (i==7) return new Compass;
 
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ADD YOUR APP HERE
         else return new MainMenu;
@@ -36,6 +37,8 @@
             Accelerometer *app; return ((*app).getParams(type));
         }else if(i==6){
             Battery *app; return ((*app).getParams(type));
+        }else if(i==7){
+            Compass *app; return ((*app).getParams(type));
         }
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ADD YOUR APP HERE
         else{

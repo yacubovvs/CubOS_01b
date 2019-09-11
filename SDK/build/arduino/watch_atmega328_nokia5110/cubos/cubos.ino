@@ -28,6 +28,7 @@
 
 #define device_has_barometer
 #define device_has_accelerometer
+#define device_has_magnitometer
 
 // #####################################
 // ##           POWER CONTROL           
@@ -47,7 +48,7 @@
 
 //#define colorScreen                   // Screen is colored
 //#define noAnimation                     // Caurse of framebuffer type
-#define os_MAINMENU_APP_COUNT 7         // How much apps in menu
+#define os_MAINMENU_APP_COUNT 8         // How much apps in menu
 
 //#define mainMenu_iconsInRow 3           // Count of apps in row in tabview in mainMenu
 //#define frame_selected_app_padding 10   // Padding of frame on hardware buttons navigate in menu
@@ -66,7 +67,9 @@
     ###  ###  ##   ###  #   #   ##    #####     
     #    # #  # #  # #  #   #    #      
     #    # #  # #  # #  #   #  ##       
-*/
+*/#define SCREEN_CENTER_X (SCREEN_WIDTH/2)
+#define SCREEN_CENTER_Y (SCREEN_HEIGHT/2)
+
 #ifdef platform_avr
 	#include "libs_h/CyberLib/CyberLib.h"
 #endif

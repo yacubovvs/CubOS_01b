@@ -22,7 +22,7 @@ cp src/apps/app_game.ino                                        build/arduino/wa
 cp src/apps/app_barometer.ino                                   build/arduino/watch_atmega328_nokia5110/cubos/
 cp src/apps/app_accelerometer.ino                               build/arduino/watch_atmega328_nokia5110/cubos/
 cp src/apps/app_battery.ino                                     build/arduino/watch_atmega328_nokia5110/cubos/
-
+cp src/apps/app_compass.ino                                     build/arduino/watch_atmega328_nokia5110/cubos/
 
 ############################################################################
 #                                                                          #
@@ -47,6 +47,7 @@ cp src/libs/driver_battery.ino                                  build/arduino/wa
 cp src/libs/driver_barometer_bmp180.ino                         build/arduino/watch_atmega328_nokia5110/cubos/
 cp src/libs/driver_accelerometer_gy_521.ino                     build/arduino/watch_atmega328_nokia5110/cubos/
 cp src/libs/driver_powermanager.ino                             build/arduino/watch_atmega328_nokia5110/cubos/
+cp src/libs/driver_magnitometer.ino                             build/arduino/watch_atmega328_nokia5110/cubos/
 
 cp src/libs/driver_controls_nano_watch_3btns.ino                build/arduino/watch_atmega328_nokia5110/cubos/
 
