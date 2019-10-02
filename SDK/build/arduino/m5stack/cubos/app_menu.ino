@@ -1,4 +1,3 @@
-//#define os_MAINMENU_APP_COUNT 20
 
 class MainMenu: public Application{
       public:
@@ -341,6 +340,42 @@ void MainMenu::loop(){
       //
       /////////////////////////////////////////////
 
+      /*
+       * BATTERY DATA
+       */
+      #ifdef conf_atm328_nokia_watch
+        
+       
+        byte battery_icon = 0;
+        switch(driver_battery_updateChargeLevel()){
+          case 100:   
+            battery_icon = BATTERY_100;
+            break;
+          case 80:   
+            battery_icon = BATTERY_80;
+            break;
+          case 60:   
+            battery_icon = BATTERY_60;
+            break;
+          case 40:   
+            battery_icon = BATTERY_40;
+            break;
+          case 20:   
+            battery_icon = BATTERY_20;
+            break;
+          case 0:   
+            battery_icon = BATTERY_0;
+            break;
+        }
+
+        drawIcon(
+          (const unsigned char *)getIcon(battery_icon),
+          SCREEN_WIDTH - 8,
+          0
+        );
+       
+      #endif
+
       //Check buttons events
       if (isPressStart_Left()){
           this->scroll_to_x += SCREEN_WIDTH;
@@ -356,6 +391,12 @@ void MainMenu::loop(){
       if (isPressStart_Select()){
         os_switch_to_app(this->current_app_menu);
       }   
+
+      #ifdef conf_atm328_nokia_watch
+          if(abs(millis() - os_control_get_last_user_avtivity())>get_delay_before_turnoff()*1000 && get_delay_before_turnoff()!=-1 ){
+            os_switch_to_app(0); // to watch widget
+          }
+      #endif
 
     #endif  
 }

@@ -35,7 +35,7 @@
 #define device_can_sleep
 
 #define control_buttons_pins {D0, D4, D10, D3, D6, D9}
-#define control_buttons_amount 6
+#define control_buttons_count 6
 #define control_buttons_on_LOW_level
 
 

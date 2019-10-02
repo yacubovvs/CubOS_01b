@@ -94,7 +94,7 @@ void os_draw_statusbar(){
                     drawIcon((const unsigned char *)getIcon(WIFI_NOTCONNECTED), SCREEN_WIDTH - 32 - 16, 6);
                 }
             }else{
-                drawIcon((const unsigned char *)getIcon(WIFI_OFF), SCREEN_WIDTH - 32 - 16, 6);
+                drawIcon((const unsigned char *)getIcon(WI_FI_IMG_OFF), SCREEN_WIDTH - 32 - 16, 6);
             }
         #endif
 

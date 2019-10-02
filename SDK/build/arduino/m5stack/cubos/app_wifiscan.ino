@@ -14,7 +14,7 @@
  */
 
 #define appNameClass    WifiScan         // App name without spaces
-#define appName         "Scan"      // App name with spaces (max 8)
+#define appName         "Scan"      // App name with spaces 
 
 class appNameClass: public Application{
     public:

@@ -172,28 +172,6 @@ void drawRect_custom( int x0, int y0, int x1, int y1, int x2, int y2, int x3, in
 }
 
 void drawIcon(const unsigned char* data, int x, int y){
-  /* 
-  byte icon_x = 0;
-  byte icon_y = 0;
-
-  //if (width<8) x = x - 8 + width; // Костыль
-  for (uint8_t data_i=0; data_i<width*height; data_i++){
-    //unsigned char data_char = data[data_i];
-    unsigned char data_char = (char)pgm_read_word(&(data[data_i]));
-    
-    for (unsigned char d=0; d<8; d++){
-      if (data_char&1<<d)  drawPixel(x + icon_x%8 + (icon_x/8)*8,y + icon_y);
-      icon_x ++;
-
-      if (icon_x==width){
-        icon_x = 0;
-        icon_y++;
-      }
-      if (icon_y==height) return;
-    }
-
-  }
-  */
 
   /*
   ################################################
@@ -259,7 +237,7 @@ void drawIcon(const unsigned char* data, int x, int y){
 
             drawLine(x + icon_x, y + icon_y, x + icon_x+7, y + icon_y); 
             icon_x+=8;
-          }else{
+          }else{ // Saving 1ms!!!!
             icon_x+=8;
           }
         }
@@ -280,6 +258,14 @@ void drawIcon(const unsigned char* data, int x, int y){
 
 //////////////////////////////////////////////////
 // For debugging
+void drawIntString(long val, int x, int y){  
+  char str[14];
+  sprintf(str, "%d", val);
+  drawString( str, x, y);
+}
+
+//////////////////////////////////////////////////
+// For debugging
 void drawDebugString(int val, int y){  
   char str[11];
   int number = val;
@@ -287,19 +273,7 @@ void drawDebugString(int val, int y){
   drawString( str, 0, y);
 }
 
-void drawDebugString(char * val){
-  
-  // DEBUGGING
-  // Problems in SDK
-  /*
-  int a=val;
-  char b[10];
-  String str;
-  str=String(a);
-  str.toCharArray(b,10);
-  drawString( b, 0, y);
-  */
-}
+
 
 
 /*

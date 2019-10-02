@@ -5,7 +5,12 @@
 SFE_BMP180 pressure;
 
 
-double barometer_T,barometer_P,p0,a,baseline;
+double 
+        barometer_Temperature,
+        barometer_Pressure
+        ;
+
+double barometer_Pressure_Current = 760;
 
 void barometer_setup()
 {
@@ -13,7 +18,33 @@ void barometer_setup()
 }
 
 
-boolean getPressure_barometer(){
+void barometer_finish()
+{
+  //pressure.stop();
+}
+
+void barometer_reset_current_pressure()
+{
+  barometer_Pressure_Current = get_barometer_mm_Hg();
+}
+
+double get_barometer_Pressure(){
+  return barometer_Pressure;
+}
+
+double get_barometer_mm_Hg(){
+  return barometer_Pressure*100/133.322;
+}
+
+double get_altitude(){
+  return ((double)760 - get_barometer_mm_Hg())*10;
+}
+
+double get_altitude_def(){
+  return ((double)barometer_Pressure_Current - get_barometer_mm_Hg())*10;
+}
+
+boolean barometer_updateData(){
   char status;
   
   status = pressure.startTemperature();
@@ -23,7 +54,7 @@ boolean getPressure_barometer(){
   {
     delay(status);
 
-    status = pressure.getTemperature(barometer_T);
+    status = pressure.getTemperature(barometer_Temperature);
     if (status != 0)
     {
       status = pressure.startPressure(3);
@@ -32,14 +63,18 @@ boolean getPressure_barometer(){
         // Wait for the measurement to complete:
         delay(status);
 
-        status = pressure.getPressure(barometer_P,barometer_T);
+        status = pressure.getPressure(barometer_Pressure,barometer_Temperature);
         if (status != 0)
         {
+
+          //barometer_Altitude
           
-          drawDebugString((int)(barometer_P*1000), 20);
-          drawDebugString((int)(barometer_T*1000), 30);
-          //drawDebugString((int)(p0*1000), 36);
-          //drawDebugString((int)(a*1000), 42);
+          //barometer_Altitude = pressure.sealevel();
+          //barometer_Sealevel;
+
+          //drawIntString( ((long)(barometer_Pressure * 10.0)), 20);
+          //drawDebugString((int)(barometer_Temperature*1000), 30);
+
           return true;
           
         }

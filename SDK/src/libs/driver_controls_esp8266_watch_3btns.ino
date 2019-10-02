@@ -6,20 +6,24 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 */
 // device buttons count
-const byte os_control_buttons = 3; 
+const byte os_control_buttons = control_buttons_count; 
 
 // Buttons address
-const int os_control_buttonsAdr[] = {12, 14, 13};
+const int os_control_buttonsAdr[] = control_buttons_pins;
 long last_user_activity = 0;
 
 long os_control_get_last_user_avtivity(){
   return last_user_activity;
 }
 
+void os_control_reset_last_user_avtivity(){
+  last_user_activity = millis();
+}
+
 void os_control_check_last_user_avtivity(){
   for (byte i=0; i<os_control_buttons; i++){
     if (digitalRead(os_control_buttonsAdr[i])){
-      last_user_activity = millis();
+      os_control_reset_last_user_avtivity();
     }
   }
 }

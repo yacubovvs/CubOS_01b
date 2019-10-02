@@ -13,15 +13,28 @@
 
 byte driver_battery_value = 0;
 
-char driver_battery_updateChargeLevel(){
+byte driver_battery_updateChargeLevel(){
     driver_battery_value = 0;
 
+
     #ifdef platform_avr
+        /*
         for (char i=0; i<100; i++){
             driver_battery_value += driver_battery_readChargeLevel();
         }
 
         driver_battery_value /= 100;
+        driver_battery_value = driver_battery_readChargeLevel();
+        */
+       byte battery_voltage = driver_battery_readChargeLevel();
+
+       if(battery_voltage>40) return 100;
+       if(battery_voltage>48) return 80;
+       if(battery_voltage>36) return 60;
+       if(battery_voltage>34) return 40;
+       if(battery_voltage>32) return 20;
+       return 0;
+
     #else
         driver_battery_value = driver_battery_readChargeLevel();
     #endif

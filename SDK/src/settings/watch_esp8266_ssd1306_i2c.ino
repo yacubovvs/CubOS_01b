@@ -23,6 +23,9 @@
 #define useNativeMenu                   // Using default app_menu.ino
 #define conf_esp8266_nokia_watch        // Name of Mconfiguration
 #define platform_esp8266                // Platform
+#define control_buttons_count 3
+#define control_buttons_pins {12, 14, 13}
+#define control_buttons_on_HIGH_level
 
 #define hasHardwareButtons              // Conf of controls with hardware btns 
 
@@ -38,6 +41,8 @@
 // ##           POWER CONTROL           
 #define device_has_power_manager
 #define device_can_sleep
+
+#define millis() (millis() + get_timeInsleep())
 
 //#define device_has_backlight_control
 //#define backlight_init 128

@@ -14,27 +14,48 @@
     #    # #  # #  # #  #   #  ##       
 */
 
-#define SCREEN_WIDTH            84     // Note: x-coordinates go wide
-#define SCREEN_HEIGHT           48     // Note: y-coordinates go high
+#define SCREEN_WIDTH            128     // Note: x-coordinates go wide
+#define SCREEN_HEIGHT           64     // Note: y-coordinates go high
 
 #define FONT_CHAR_WIDTH         6     // Font letter size width
 #define FONT_CHAR_HEIGHT        8     // Font letter size height
 
 #define useNativeMenu                   // Using default app_menu.ino
-#define conf_atm328_nokia_watch         // Name of Mconfiguration
-#define platform_avr                    // Platform
+#define conf_esp8266_nokia_watch        // Name of Mconfiguration
+#define platform_esp8266                // Platform
+#define control_buttons_count 3
+#define control_buttons_pins {12, 14, 13}
+#define control_buttons_on_HIGH_level
 
 #define hasHardwareButtons              // Conf of controls with hardware btns 
 
-#define device_has_barometer
-#define device_has_accelerometer
+#define display_i2c_ssd1306
+
+//#define device_has_barometer
+//#define device_has_accelerometer
+
+#define device_has_vibro
+#define device_vibro_pin 16
 
 // #####################################
 // ##           POWER CONTROL           
 #define device_has_power_manager
+#define device_can_sleep
 
-#define device_has_backlight_control
-#define backlight_init 128
+#define millis() (os_get_rtc_Millis())
+
+extern "C"
+        {
+            #include "user_interface.h"
+            #include "osapi.h"
+            #include "ets_sys.h"
+        }
+        
+//#define millis() (system_get_rtc_time()/system_rtc_clock_cali_proc()*100)
+
+#define debug
+//#define device_has_backlight_control
+//#define backlight_init 128
 
 
 //#define isTouchScreen                 // Conf of controls
@@ -44,7 +65,7 @@
 
 //#define colorScreen                   // Screen is colored
 //#define noAnimation                     // Caurse of framebuffer type
-#define os_MAINMENU_APP_COUNT 7         // How much apps in menu
+#define os_MAINMENU_APP_COUNT 5         // How much apps in menu
 
 //#define mainMenu_iconsInRow 3           // Count of apps in row in tabview in mainMenu
 //#define frame_selected_app_padding 10   // Padding of frame on hardware buttons navigate in menu
@@ -63,7 +84,9 @@
     ###  ###  ##   ###  #   #   ##    #####     
     #    # #  # #  # #  #   #    #      
     #    # #  # #  # #  #   #  ##       
-*/
+*/#define SCREEN_CENTER_X (SCREEN_WIDTH/2)
+#define SCREEN_CENTER_Y (SCREEN_HEIGHT/2)
+
 #ifdef platform_avr
 	#include "libs_h/CyberLib/CyberLib.h"
 #endif
@@ -229,7 +252,7 @@ void setup()
 	#endif
 
 	#ifdef device_has_barometer
-		barometer_setup();
+		//barometer_setup();
 	#endif
 
 	#ifndef device_has_power_manager
@@ -244,9 +267,81 @@ void setup()
 		driver_vibro_setup();
 	#endif
 
+
+  calibrate_rtc(100);
+
 }
 
+/*
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #                                     TESTING +                                   # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+*/
+long lastMillis = 0;
+long lastRTC = 0;
+
+long rtc_k = 0;
+
+long current_rtcTime = 0;
+
+long os_get_rtc_Millis(){
+  return current_rtcTime;
+}
+
+long get_rtc_k(){
+  return rtc_k; 
+}
+
+void os_update_rtc_Millis(){
+  if(rtc_k==0){
+    Serial.println("rtc_k==0");
+    return;
+  }
+  
+  long new_rtc = system_get_rtc_time();
+  long new_millis = millis();
+
+  current_rtcTime += (lastRTC-new_rtc)/rtc_k;
+
+  lastRTC = new_rtc;
+  lastMillis = new_millis;
+  //lastMillis = millis();
+
+  Serial.print("rtc_k ");
+  Serial.println(rtc_k);
+}
+
+void calibrate_rtc(){
+  calibrate_rtc(100);
+}
+
+void calibrate_rtc(int t_delay){
+  long t1_millis = system_get_rtc_time();
+  long t1_rtc = millis();
+
+  delay(t_delay);
+
+  long t2_millis = system_get_rtc_time();
+  long t2_rtc = millis();
+
+  rtc_k = (t1_rtc - t2_rtc)/(t1_millis - t2_millis);
+  os_update_rtc_Millis();
+}
+
+
+
+/*
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# #                                     TESTING -                                   # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+*/
+
 void loop(){
+  calibrate_rtc(100);
 	clearscreen_displayDriver();
 
 	#ifdef tabletView
@@ -275,6 +370,57 @@ void loop(){
       	//drawDebugString(dtime, 0); // show time needed for 1 loop
       	//drawDebugString(1000/dtime, 10); // FPS
       	//drawDebugString(millis()/1000, 55); // Timer (if you want to know is os freezing)
+
+
+        /*
+       long millis_time = millis();
+       long rtc_time = system_get_rtc_time();
+       long cali_proc = system_rtc_clock_cali_proc();
+
+       delay(1000);
+
+       long d_millis_time = millis() - millis_time;
+       long d_rtc_time = system_get_rtc_time() - rtc_time;
+
+       drawDebugString(d_rtc_time*100/d_millis_time, 0);
+
+       //drawDebugString(millis() - millis_time, 0);
+       //drawDebugString(system_get_rtc_time() - rtc_time, 8);
+       drawDebugString(system_rtc_clock_cali_proc(), 16);
+
+       //system_get_rtc_time()/system_rtc_clock_cali_proc()*100
+       */
+
+       os_update_rtc_Millis();
+
+      /*
+      # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+      # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+      # #                                     TESTING +                                   # #
+      # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+      # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+      */
+      //long lastMillis = 0;
+      //long lastRTC = 0;
+      
+      //long count_rtcTime = 0;
+
+      drawDebugString(lastMillis/1000, 0);
+      drawDebugString(lastRTC/1000/1000, 10);
+
+      lastMillis = millis();
+      lastRTC = system_get_time();
+      /*
+      # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+      # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+      # #                                     TESTING -                                   # #
+      # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+      # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+      */
+       
+
+      //drawDebugString(get_timeInsleep(), 0);
+       
 
 		#ifdef colorScreen
 			setDrawColor_contrast();

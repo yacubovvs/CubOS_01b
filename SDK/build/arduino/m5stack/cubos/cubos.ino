@@ -58,7 +58,9 @@
     ###  ###  ##   ###  #   #   ##    #####     
     #    # #  # #  # #  #   #    #      
     #    # #  # #  # #  #   #  ##       
-*/
+*/#define SCREEN_CENTER_X (SCREEN_WIDTH/2)
+#define SCREEN_CENTER_Y (SCREEN_HEIGHT/2)
+
 #ifdef platform_avr
 	#include "libs_h/CyberLib/CyberLib.h"
 #endif
@@ -92,7 +94,7 @@ unsigned int dtime = 0;
 
 #define WIFI_CONNECTED		0x11
 #define WIFI_NOTCONNECTED	0x12
-#define WIFI_OFF			0x13
+#define WI_FI_IMG_OFF		0x13
 #define BT_CONNECTED		0x14
 #define BT_NOTCONNECTED		0x15
 #define BT_OFF				0x16
@@ -224,7 +226,7 @@ void setup()
 	#endif
 
 	#ifdef device_has_barometer
-		barometer_setup();
+		//barometer_setup();
 	#endif
 
 	#ifndef device_has_power_manager
@@ -233,6 +235,10 @@ void setup()
 		#endif
 	#else
 		// if device_has_power_manager define - start accelerometer then need
+	#endif
+
+	#ifdef device_has_vibro
+		driver_vibro_setup();
 	#endif
 
 }
@@ -273,5 +279,9 @@ void loop(){
   	//
   	////////////////////////////////////////////////////////////////////
 
-  updatescreen_displayDriver();
+	#ifdef device_can_sleep	
+    	device_powermanager_sleep_loop();
+	#endif
+
+  	updatescreen_displayDriver();
 }

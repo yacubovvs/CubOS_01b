@@ -31,10 +31,23 @@ class appNameClass: public Application{
             double barometer_T,barometer_P;
 
 
-            if(getPressure_barometer()){
-              drawString_centered("Gata got",SCREEN_WIDTH/2,10);
+            if(barometer_updateData()){
+              //drawString_centered("Gata got",SCREEN_WIDTH/2,10);
               //drawDebugString((int)(barometer_T*1000), 20);
               //drawDebugString((int)(barometer_P*1000), 30);
+
+              drawString(  "kPa:", 0, 0);
+              drawIntString(  (long)get_barometer_Pressure(), 50, 0);
+              
+              drawString(  "mm Hg:", 0, 10);
+              drawIntString(  (long)get_barometer_mm_Hg(),    50, 10);
+
+              drawString(  "Sea(m):", 0, 20);
+              drawIntString(  (long)get_altitude(),           50, 20);
+
+              drawString(  "dAlt(m):", 0, 30);
+              drawIntString(  (long)get_altitude_def(),           50, 30);
+              
             }else{
               drawString_centered("Barometer failed",SCREEN_WIDTH/2,10);
             }
@@ -42,6 +55,11 @@ class appNameClass: public Application{
 
             if (isPressStart_Select()){
                 os_switch_to_app(-1);
+                barometer_finish();
+            }
+
+            if(isPressStart_Left()){
+              barometer_reset_current_pressure();  
             }
 
            /*                                                                                         *
@@ -58,7 +76,7 @@ class appNameClass: public Application{
             *                              >>>   APP SETUP ON START   <<<                             *
             *                                                                                         *
             */
-
+            barometer_setup();
             // ON START CODE
             #ifdef tabletView
                 this->showStatusBar = true;

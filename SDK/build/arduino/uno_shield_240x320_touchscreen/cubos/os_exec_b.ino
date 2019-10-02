@@ -71,12 +71,12 @@ byte dp = 0;
 byte repeats = 0;
 boolean fileOpened = false;
 
-#define OS_CONSTROL_EVERY_MS 100
+#define OS_CONSTROL_EVERY_MS 30
 byte timer_in_b = 0;
 void check_os_controls_ifneed(){
   if(millis() - os_clock_time - timer_in_b*OS_CONSTROL_EVERY_MS > OS_CONSTROL_EVERY_MS){
     timer_in_b++;
-    //os_control_loop();
+    os_control_loop();
 
     //drawDebug("Check os_controls");
   }
@@ -191,7 +191,6 @@ void os_run_b_readString(){
           int icon_y=0;
 
           if(param3==0x01){
-            //d_rawDebug("Drawing icon");
             
             while(1){
 
@@ -204,20 +203,17 @@ void os_run_b_readString(){
                 byte blue   = os_readChar(); 
 
                 setDrawColor(red, green, blue);
-                //drawDebug("Drawing new color lay");
                  
                 icon_x = 0;
                 icon_y = 0;
 
                 #ifdef isTouchScreen
                   check_os_controls_ifneed();
-                //    os_control_loop();
                 #endif
 
                 for (int reading_byte=0; reading_byte<(param4*param5%8==0?param4*param5/8:param4*param5/8+1); reading_byte++){
                   current = os_readChar();
 
-                  //drawDebugString((param4*param5%8==0?param4*param5/8:param4*param5/8+1), 300);
                   if(current!=0x00 && current!=0xFF){
                     for (unsigned char d=0; d<8; d++){
                       if (icon_x>=param4){
@@ -234,7 +230,6 @@ void os_run_b_readString(){
                     if (icon_x>=param4){
                       icon_y+=icon_x/param4;
                       icon_x %= param4;
-                      //icon_y++;
                     }
 
                     drawLine(param1 + icon_x, param2 + icon_y, param1 + icon_x+7, param2 + icon_y); 
@@ -242,15 +237,10 @@ void os_run_b_readString(){
                   }else{
                     icon_x+=8;
                   }
-                  //if (reading_byte>=1024) break;
                 }
-
-                //current = os_readChar();
                 
               }else{
                 current = os_readChar();
-                //drawDebugString(current, 300);
-                //drawDebug("Break!!!");
                 break;
               } 
 
@@ -449,10 +439,6 @@ byte get_size_of_b_var(byte var){
   }
 }
 
-uint64_t bytes_to_value(byte byte0, byte byte1, byte byte2, byte byte3, byte byte4, byte byte5, byte byte6, byte byte7){
-  return (byte7<<56)|(byte6<<48)|(byte5<<40)|(byte4<<32)|(byte3<<24)|(byte2<<16)|(byte1<<8)|byte0;
-}
-
 void go_to_the_end_of_string(){
   byte current=0xFF;
   byte last=0xFF;
@@ -548,8 +534,10 @@ uint64_t os_run_b_readParam(){
           return 0;
         #endif
       }else if(get_sys_param==SYSTEM_VALUE_IS_TOUCHED){
-        #ifndef conf_m5stack
-          return os_control_pressStart[0];
+        #ifdef isTouchScreen
+          return touchScreen_isTouch_Start();
+        #else
+          return false;
         #endif
       }else if(get_sys_param==SYSTEM_VALUE_GET_TOUCH_X){
         #ifdef isTouchScreen

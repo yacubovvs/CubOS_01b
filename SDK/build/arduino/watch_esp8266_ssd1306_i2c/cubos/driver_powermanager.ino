@@ -1,10 +1,21 @@
+#ifdef platform_esp8266
+
+  long timeInsleep = 0;
+
+  long get_timeInsleep(){
+    return timeInsleep;
+  }
+
+#endif
+
 #ifdef device_can_sleep
     boolean isInFullSleep = false;
+    boolean isInSleepActive = false;
 
     #ifdef platform_esp8266
-
         #include <ESP8266WiFi.h> 
         #include <Wire.h> 
+        //#include "hw_timer.h"
         #define pin_wake_up1 12
         #define pin_wake_up1 13
         #define pin_wake_up1 14
@@ -38,37 +49,135 @@
 
         }*/
 
+        long rtc_time_onsleep = 0;
+        long quartz_time_onsleep = 0;
+
         // the loop function runs over and over again forever
         void driver_powerManager_GoSleep(uint16_t time) {
 
+         // K for calibration RTC
+         long millis_time = millis();
+         quartz_time_onsleep = millis();
+         rtc_time_onsleep = system_get_rtc_time();
+  
+         delay(1000);
+  
+         long d_millis_time = millis() - millis_time;
+         long d_rtc_time = system_get_rtc_time() - rtc_time_onsleep;
+  
+         rtc_k = d_rtc_time*100/d_millis_time;
+
+
+            /*
+            wifi_station_disconnect();
             wifi_set_opmode_current(NULL_MODE);
             wifi_fpm_set_sleep_type(LIGHT_SLEEP_T);
-            wifi_fpm_open();
-            wifi_fpm_set_wakeup_cb(wake_cb);
-            
-            PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,3);
 
-            for(byte i=0; i<control_buttons_amount; i++){
+            for(byte i=0; i<control_buttons_count; i++){
                 const int btns_pins[] = control_buttons_pins;
                 #ifdef control_buttons_on_LOW_level
                     gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_LOLEVEL);    
                 #else
-                    gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_LOLEVEL);    
+                    gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_HILEVEL);    
                 #endif
             }
+
+            wifi_fpm_open();
+
+            delay(100);
+            wifi_fpm_set_wakeup_cb(wake_cb);
+            wifi_fpm_do_sleep(150*100);
+            delay(100);
+
+            isInFullSleep = true;
+          / */
+
+            wifi_set_opmode_current(NULL_MODE);
+            wifi_fpm_set_sleep_type(LIGHT_SLEEP_T);
+            wifi_fpm_open();
+            //WiFi.forceSleepBegin();
+            //wifi_fpm_set_wakeup_cb(wake_cb);
+
             
-            //gpio_pin_wakeup_enable(12, GPIO_PIN_INTR_HILEVEL);
+            PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,3);
+
+            
+            for(byte i=0; i<control_buttons_count; i++){
+                const int btns_pins[] = control_buttons_pins;
+                #ifdef control_buttons_on_LOW_level
+                    gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_LOLEVEL);    
+                #else
+                    gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_HILEVEL);     
+                #endif
+            }
+
+            //gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_LOLEVEL);    
+
+            //ESP.wdtEnable(150);
+            //gpio_pin_wakeup_enable(16, GPIO_PIN_INTR_HILEVEL);
+            
+            // gpio_pin_wakeup_enable(wake_up_timer_pin, GPIO_PIN_INTR_HILEVEL);
 
             wifi_fpm_set_wakeup_cb(wake_cb); 
             
+            //ESP.sleep_enable_timer_wakeup(1500);
+            //esp_sleep_enable_timer_wakeup(1500);
             wifi_fpm_do_sleep(time*1000);
-            delay (time);
+            delay (1000);
+            //ESP.node_set_cpu_freq(80);
+            
+            //isInFullSleep = false;
+            #ifdef debug 
+              Serial.println("Go to sleep");
+              Serial.println(millis());
+            #endif
+
+            //wifi_fpm_do_wakeup();
+
+            // */
 
         }
 
         void wake_cb() {
+          //wifi_fpm_close();
+          //wifi_set_opmode(STATION_MODE);
+
+          //ESP.wdtFeed();
+
+          long was_in_sleep_rtc = (system_get_rtc_time() - rtc_time_onsleep)/rtc_k;
+          timeInsleep += was_in_sleep_rtc*100 - (millis()-quartz_time_onsleep) - 1100;
+          quartz_time_onsleep = millis();
+          rtc_time_onsleep = system_get_rtc_time();
+
+          #ifdef debug 
+            Serial.println("Added delta rtc");
+            Serial.println(was_in_sleep_rtc*100 - (millis()-quartz_time_onsleep) - 1100);
+          #endif
+
+          os_control_check_last_user_avtivity();
+          if (abs(millis() - os_control_get_last_user_avtivity())>5000){  
+          }else{
+            //display_driver_power_on();
+            display_driver_power_on();
+            os_control_reset_last_user_avtivity();
+          }
+          
+
+          #ifdef debug 
             Serial.println("wakeup");
+          #endif
+
+          isInFullSleep = false;
+          isInSleepActive = false;
+          
+            
+          /*
+            #ifdef debug 
+              Serial.println("wakeup");
+            #endif
             wifi_fpm_close();
+
+            /*
             WiFi.forceSleepBegin();
 
             if(isInFullSleep){
@@ -80,14 +189,25 @@
 
             wifi_set_sleep_type(LIGHT_SLEEP_T);
             WiFi.forceSleepBegin(); 
+            * /
+
+            display_driver_power_on();
+            //WiFi.forceSleep(); 
+          */
         }
     #endif
 #endif
 
 #ifdef device_can_sleep
     void device_powermanager_sleep_loop(){
+      
+      return;
         #ifdef platform_esp8266
+          if (abs(millis() - os_control_get_last_user_avtivity())>5000){  
             while( abs(millis() - os_control_get_last_user_avtivity())>5000 ){
+              //delay(200);
+              //wifi_fpm_do_sleep(100);
+              //delay(50);
               //os_control_check_last_user_avtivity
               if(!isInFullSleep){
                   isInFullSleep = true;
@@ -95,8 +215,40 @@
                     display_driver_power_off();
                   //#endif
               }
-              os_control_loop();
-              driver_powerManager_GoSleep(100);
+              //os_control_loop();
+              os_control_check_last_user_avtivity();
+
+              #define sleeptime 150
+              //if (abs(millis() - os_control_get_last_user_avtivity())>5000){ 
+                driver_powerManager_GoSleep(sleeptime);
+                
+              //}
+              //timeInsleep += sleeptime;
+              #ifdef debug 
+                Serial.println("While cycle");
+              #endif
+            }
+
+            #ifdef debug 
+              Serial.println("Cycle finished");
+            #endif
+
+            
+
+            //wake_cb();   
+          }
+            
+        #endif
+
+        #ifdef conf_atm328_nokia_watch
+            if(abs(millis() - os_control_get_last_user_avtivity())>get_delay_before_turnoffBackLight()*1000 && os_control_get_last_user_avtivity()!=-1 ){
+                #ifdef device_has_backlight_control
+                    power_manager_set_backlight_strength(0);
+                #endif
+            }else{
+                #ifdef device_has_backlight_control
+                    power_manager_set_backlight_strength(get_backlight_light());
+                #endif
             }
         #endif
     }
@@ -104,9 +256,9 @@
 
 void power_manager_setup(){
     //Buttins power
-    pinMode(0, OUTPUT);
-    digitalWrite(0, 1);
-
+    //pinMode(0, OUTPUT);
+    //digitalWrite(0, 1);
+    
     #ifdef device_has_accelerometer
         pinMode(1, OUTPUT);
         digitalWrite(1, 1);
@@ -123,6 +275,22 @@ void power_manager_setup(){
         #ifdef platform_esp8266
             wifi_set_sleep_type(LIGHT_SLEEP_T);
             WiFi.forceSleepBegin(); 
+
+            wifi_station_disconnect();
+            wifi_set_opmode_current(NULL_MODE);
+            wifi_fpm_set_sleep_type(LIGHT_SLEEP_T);
+
+            /*
+            for(byte i=0; i<control_buttons_count; i++){
+                const int btns_pins[] = control_buttons_pins;
+                #ifdef control_buttons_on_LOW_level
+                    gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_LOLEVEL);    
+                #else
+                    gpio_pin_wakeup_enable(btns_pins[i], GPIO_PIN_INTR_HILEVEL);    
+                #endif
+            }*/
+
+            wifi_fpm_open();
         #endif
     #endif
         

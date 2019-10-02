@@ -166,7 +166,7 @@ void setup()
 	#endif
 
 	#ifdef device_has_barometer
-		barometer_setup();
+		//barometer_setup();
 	#endif
 
 	#ifndef device_has_power_manager

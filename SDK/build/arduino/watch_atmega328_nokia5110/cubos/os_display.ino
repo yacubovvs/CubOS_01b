@@ -258,6 +258,14 @@ void drawIcon(const unsigned char* data, int x, int y){
 
 //////////////////////////////////////////////////
 // For debugging
+void drawIntString(long val, int x, int y){  
+  char str[14];
+  sprintf(str, "%d", val);
+  drawString( str, x, y);
+}
+
+//////////////////////////////////////////////////
+// For debugging
 void drawDebugString(int val, int y){  
   char str[11];
   int number = val;
@@ -265,19 +273,7 @@ void drawDebugString(int val, int y){
   drawString( str, 0, y);
 }
 
-void drawDebugString(char * val){
-  
-  // DEBUGGING
-  // Problems in SDK
-  /*
-  int a=val;
-  char b[10];
-  String str;
-  str=String(a);
-  str.toCharArray(b,10);
-  drawString( b, 0, y);
-  */
-}
+
 
 
 /*

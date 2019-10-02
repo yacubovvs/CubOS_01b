@@ -1,4 +1,48 @@
-unsigned char delay_before_turnoff   = 6; 
+unsigned char delay_before_turnoff          = 4; 
+unsigned char delay_before_turnoffBackLight = 3; 
+
+#ifdef backlight_init
+    unsigned char backlight_light = backlight_init;
+#else
+    unsigned char backlight_light = 0;
+#endif
+
+byte get_backlight_light(){
+    return backlight_light*backlight_light*13/10;
+}
+
+int get_delay_before_turnoff(){
+    switch(delay_before_turnoff){
+        case 0: return 5;
+        case 1: return 10;
+        case 2: return 15;
+        case 3: return 20;
+        case 4: return 30;
+        case 5: return 45;
+        case 6: return 60;
+        case 7: return 2*60;
+        case 8: return 5*60;
+        case 9: return 15*60;
+        default: return -1;
+    }
+}
+
+int get_delay_before_turnoffBackLight(){
+    switch(delay_before_turnoffBackLight){
+        case 0: return 3;
+        case 1: return 5;
+        case 2: return 10;
+        case 3: return 15;
+        case 4: return 20;
+        case 5: return 30;
+        case 6: return 45;
+        case 7: return 60;
+        case 8: return 2*60;
+        case 9: return 5*50;
+        default: return -1;
+    }
+}
+
 /*
 case 0: return "5 sec";
 case 1: return "10 sec";
@@ -13,7 +57,7 @@ case 9: return "1 hour";
 */
 
 #define appNameClass    SettingApp         // App name without spaces
-#define appName         "Settings"         // App name with spaces (max 8)
+#define appName         "Settings"         // App name with spaces 
 
 class appNameClass: public Application{
     public:
@@ -34,7 +78,9 @@ class appNameClass: public Application{
             switch(current_menu){
                 case 0: drawSettingsMenu(); break;
                 case 1: drawingSelectDeleayTurnOff(); break;
-                case 2: drawSetTime(); break;
+                case 2: drawingSelectBacklight(); break;
+                case 3: drawingSelectDeleayTurnOffBackLight(); break;
+                case 4: drawSetTime(); break;
             }
             
 
@@ -177,6 +223,96 @@ class appNameClass: public Application{
             }
         }
 
+        void drawingSelectDeleayTurnOffBackLight(){
+            
+            #define diagram_height  20
+            #define diagram_padding 5
+            #define top_margin      (SCREEN_HEIGHT-diagram_height-diagram_padding-FONT_CHAR_HEIGHT-15)/2
+
+            drawRect_custom(
+                0, 
+                top_margin + diagram_padding + diagram_height,
+                SCREEN_WIDTH - 1,
+                top_margin + diagram_padding + diagram_height,
+                SCREEN_WIDTH - 1,
+                top_margin + diagram_padding,
+                0, 
+                top_margin + diagram_padding + diagram_height,
+                false
+            );
+
+            if (isPressStart_Left() && delay_before_turnoffBackLight!=0){delay_before_turnoffBackLight--;}
+            if (isPressStart_Right() && delay_before_turnoffBackLight<10){delay_before_turnoffBackLight++;}
+
+            drawingSelectDeleayTurnOffBackLight_value(delay_before_turnoffBackLight*10);
+
+            if (isPressStart_Select()){
+                current_menu = 0;
+            }
+        }
+
+        void drawingSelectBacklight(){
+            
+            #define diagram_height  20
+            #define diagram_padding 5
+            #define top_margin      (SCREEN_HEIGHT-diagram_height-diagram_padding-FONT_CHAR_HEIGHT-15)/2
+
+            drawRect_custom(
+                0, 
+                top_margin + diagram_padding + diagram_height,
+                SCREEN_WIDTH - 1,
+                top_margin + diagram_padding + diagram_height,
+                SCREEN_WIDTH - 1,
+                top_margin + diagram_padding,
+                0, 
+                top_margin + diagram_padding + diagram_height,
+                false
+            );
+
+            
+            if (isPressStart_Left() && backlight_light!=0){
+                backlight_light--;
+                #ifdef device_has_backlight_control
+                    power_manager_set_backlight_strength(get_backlight_light());
+                #endif
+            }
+            if (isPressStart_Right() && backlight_light<10){
+                backlight_light++;
+                #ifdef device_has_backlight_control
+                    power_manager_set_backlight_strength(get_backlight_light());
+                #endif    
+            }
+
+            
+
+            drawingSelectBacklight_value(backlight_light*10);
+
+            if (isPressStart_Select()){
+                current_menu = 0;
+            }
+        }
+
+        void drawingSelectBacklight_value(byte percent){
+            drawRect_custom(
+                0, 
+                top_margin + diagram_padding + diagram_height,
+                // Value nums
+                (SCREEN_WIDTH - 1)*percent/100 + 1,
+                top_margin + diagram_padding + diagram_height - diagram_height*percent/100,
+                (SCREEN_WIDTH - 1)*percent/100 + 1,
+                top_margin + diagram_padding + diagram_height,
+                //
+                0, 
+                top_margin + diagram_padding + diagram_height,
+                true
+            );
+
+            drawString_centered(getBackLight_label(), SCREEN_WIDTH/2, diagram_height + top_margin + diagram_padding*2);
+
+            drawIcon( (const unsigned char *)getIcon(ICON_ARROW_RIGHT), SCREEN_WIDTH-4, diagram_height + top_margin + diagram_padding*2); // Arrow right
+            drawIcon( (const unsigned char *)getIcon(ICON_ARROW_LEFT), 0,                                  diagram_height + top_margin + diagram_padding*2); // Arrow left  
+        }
+
         void drawingSelectDeleayTurnOff_value(byte percent){
             drawRect_custom(
                 0, 
@@ -192,31 +328,85 @@ class appNameClass: public Application{
                 true
             );
 
-            drawString_centered(getDelayBeforTurnOff(), SCREEN_WIDTH/2, diagram_height + top_margin + diagram_padding*2);
+            drawString_centered(getDelayBeforTurnOff_label(), SCREEN_WIDTH/2, diagram_height + top_margin + diagram_padding*2);
 
             drawIcon( (const unsigned char *)getIcon(ICON_ARROW_RIGHT), SCREEN_WIDTH-4, diagram_height + top_margin + diagram_padding*2); // Arrow right
             drawIcon( (const unsigned char *)getIcon(ICON_ARROW_LEFT), 0,                                  diagram_height + top_margin + diagram_padding*2); // Arrow left  
         }
 
-        char * getDelayBeforTurnOff(){
+        void drawingSelectDeleayTurnOffBackLight_value(byte percent){
+            drawRect_custom(
+                0, 
+                top_margin + diagram_padding + diagram_height,
+                // Value nums
+                (SCREEN_WIDTH - 1)*percent/100 + 1,
+                top_margin + diagram_padding + diagram_height - diagram_height*percent/100,
+                (SCREEN_WIDTH - 1)*percent/100 + 1,
+                top_margin + diagram_padding + diagram_height,
+                //
+                0, 
+                top_margin + diagram_padding + diagram_height,
+                true
+            );
+
+            drawString_centered(getDelayBeforTurnOffBackLight_label(), SCREEN_WIDTH/2, diagram_height + top_margin + diagram_padding*2);
+
+            drawIcon( (const unsigned char *)getIcon(ICON_ARROW_RIGHT), SCREEN_WIDTH-4, diagram_height + top_margin + diagram_padding*2); // Arrow right
+            drawIcon( (const unsigned char *)getIcon(ICON_ARROW_LEFT), 0,                                  diagram_height + top_margin + diagram_padding*2); // Arrow left  
+        }
+
+        char * getBackLight_label(){
+            switch(backlight_light){
+                case 0: return "0%";
+                case 1: return "10%";
+                case 2: return "20%";
+                case 3: return "30%";
+                case 4: return "40%";
+                case 5: return "50%";
+                case 6: return "60%";
+                case 7: return "70%";
+                case 8: return "80%";
+                case 9: return "90%";
+                case 10: return "100%";
+                default: return "0%";
+            }
+        }
+
+        char * getDelayBeforTurnOff_label(){
             switch(delay_before_turnoff){
                 case 0: return "5 sec";
                 case 1: return "10 sec";
-                case 2: return "30 sec";
-                case 3: return "1 min";
-                case 4: return "2 min";
-                case 5: return "5 min";
-                case 6: return "10 min";
-                case 7: return "30 min";
-                case 8: return "45 min";
-                case 9: return "1 hour";
+                case 2: return "15 sec";
+                case 3: return "20 sec";
+                case 4: return "30 sec";
+                case 5: return "45 sec";
+                case 6: return "1 min";
+                case 7: return "2 min";
+                case 8: return "5 min";
+                case 9: return "15 min";
+                default: return "Never";
+            }
+        }
+
+        char * getDelayBeforTurnOffBackLight_label(){
+            switch(delay_before_turnoffBackLight){
+                case 0: return "3 sec";
+                case 1: return "5 sec";
+                case 2: return "10 sec";
+                case 3: return "15 sec";
+                case 4: return "20 sec";
+                case 5: return "30 sec";
+                case 6: return "45 sec";
+                case 7: return "1 min";
+                case 8: return "2 min";
+                case 9: return "5 min";
                 default: return "Never";
             }
         }
 
         void drawSettingsMenu(){
             if (isPressStart_Left() && current_menu_position>0) current_menu_position--;
-            if (isPressStart_Right() && current_menu_position<2) current_menu_position++;
+            if (isPressStart_Right() && current_menu_position<4) current_menu_position++;
 
             this->scroll_to_y = SCREEN_HEIGHT/2-2-current_menu_position * drawSettingsElement_height + drawSettingsElement_margin - drawSettingsElement_height/2;
 
@@ -237,15 +427,19 @@ class appNameClass: public Application{
 
             sprintf(time_string, "%s:%s:%s", v1, v2, v3);
 
-            drawSettingsElement("Sleep after",getDelayBeforTurnOff(),0);
-            drawSettingsElement("Set time", time_string, 1);
-            drawSettingsElement("Exit", "", 2);
+            drawSettingsElement("Lock watch",   getDelayBeforTurnOff_label(),0);
+            drawSettingsElement("Backlight",    getBackLight_label(),1);
+            drawSettingsElement("Light time",   getDelayBeforTurnOffBackLight_label(),2);
+            drawSettingsElement("Set time", time_string, 3);
+            drawSettingsElement("Exit", "", 4);
 
             if (isPressStart_Select()){
                 switch (current_menu_position){
-                    case 2: os_switch_to_app(-1); break;
+                    case 4: os_switch_to_app(-1); break;
                     case 0: current_menu = 1; break;
                     case 1: current_menu = 2; break;
+                    case 2: current_menu = 3; break;
+                    case 3: current_menu = 4; break;
                 }
                 
             }
@@ -275,14 +469,14 @@ class appNameClass: public Application{
             */
         };
 
-		static unsigned const char* getParams(unsigned char type){
+    static unsigned const char* getParams(unsigned char type){
             switch(type){ 
               case PARAM_TYPE_NAME: return (unsigned char*)appName; 
               case PARAM_TYPE_ICON: return icon;
               default: return (unsigned char*)""; }
         };
 
-		const static byte icon[];
+    const static byte icon[];
 
         appNameClass(){ // Constructor
             setup();
@@ -291,8 +485,8 @@ class appNameClass: public Application{
 };
 
 const byte appNameClass::icon[] PROGMEM = { //128
-	//////////////////////////////////////////////////////////////
-	//		PUT YOUR ICON HERE
+  //////////////////////////////////////////////////////////////
+  //    PUT YOUR ICON HERE
   #ifdef colorScreen
     0x02,0x01,0x02,0x20,0x02,0x20,0x04,0xff,0xff,0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -317,6 +511,6 @@ const byte appNameClass::icon[] PROGMEM = { //128
     0x1F,0xFE,0x3E,0x7F,0xFE,0x7C,0x1C,0x3F,0xFC,0x38,0x08,0x0F,0xF0,0x10,0x00,0x0F,0xF0,0x00,0x00,0x0F,0xF0,0x00,0x00,0x0F,0xF0,0x00,0x00,
     0x0F,0xF0,0x00,
   #endif
-	//
-	//////////////////////////////////////////////////////////////
+  //
+  //////////////////////////////////////////////////////////////
 };
