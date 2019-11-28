@@ -74,7 +74,7 @@ boolean fileOpened = false;
 #define OS_CONSTROL_EVERY_MS 30
 byte timer_in_b = 0;
 void check_os_controls_ifneed(){
-  if(millis() - os_clock_time - timer_in_b*OS_CONSTROL_EVERY_MS > OS_CONSTROL_EVERY_MS){
+  if(_millis() - os_clock_time - timer_in_b*OS_CONSTROL_EVERY_MS > OS_CONSTROL_EVERY_MS){
     timer_in_b++;
     os_control_loop();
 

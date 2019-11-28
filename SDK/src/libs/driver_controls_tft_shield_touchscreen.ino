@@ -285,11 +285,11 @@ void os_control_loop(){
   digitalWrite(YP, HIGH);   //because TFT control pins
   digitalWrite(XM, HIGH);
 
-  if(isTouching && millis() - lastTouch> dtime){
+  if(isTouching && _millis() - lastTouch> dtime){
     isTouching = false;
   }
 
-  if(isTouchStart && millis() - lastTouch_start> dtime){
+  if(isTouchStart && _millis() - lastTouch_start> dtime){
     isTouchStart = false;
   }
 
@@ -299,12 +299,12 @@ void os_control_loop(){
     if(!isTouchStart && !isTouching ){
       isTouchStart = true;
 
-      lastTouch_start = millis();
+      lastTouch_start = _millis();
     }
 
     isTouching = true;
     
-    lastTouch = millis();
+    lastTouch = _millis();
 
     os_touch_x = map(tp.x, TS_LEFT, TS_RIGHT, SCREEN_WIDTH,0);
     os_touch_y = map(tp.y, TS_TOP, TS_BOTTOM, SCREEN_HEIGHT,0);

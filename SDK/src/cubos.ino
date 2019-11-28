@@ -2,7 +2,11 @@
 #define SCREEN_CENTER_Y (SCREEN_HEIGHT/2)
 
 #ifdef platform_avr
-	#include "libs_h/CyberLib/CyberLib.h"
+  #ifndef conf_atm64_watch4
+	  #include "libs_h/CyberLib/CyberLib.h"
+  #endif
+
+  #include "libs_h/avr/power.h"
 #endif
 
 unsigned int dtime = 0;
@@ -14,30 +18,44 @@ unsigned int dtime = 0;
 *                                    *
 **************************************
 */
-#define ICON_ARROW_RIGHT 	0x01
-#define ICON_ARROW_LEFT 	0x02
-#define ICON_ARROW_UP 		0x03
-#define ICON_ARROW_DOWN 	0x04
-#define BATTERY_UNKNOWN		0x05
 
-#define BATTERY_100			0x06
-#define BATTERY_90			0x07
-#define BATTERY_80			0x08
-#define BATTERY_70			0x09
-#define BATTERY_60			0x0A
-#define BATTERY_50			0x0B
-#define BATTERY_40			0x0C
-#define BATTERY_30			0x0D
-#define BATTERY_20			0x0E
-#define BATTERY_10			0x0F
-#define BATTERY_0			0x10
+/*
+ * # # # # # # # # # # # #
+ * #        ICONS        #
+ * # # # # # # # # # # # #
+*/
 
-#define WIFI_CONNECTED		0x11
-#define WIFI_NOTCONNECTED	0x12
-#define WI_FI_IMG_OFF		0x13
-#define BT_CONNECTED		0x14
-#define BT_NOTCONNECTED		0x15
-#define BT_OFF				0x16
+#define ICON_ARROW_RIGHT 	    	0x01
+#define ICON_ARROW_LEFT 	    	0x02
+#define ICON_ARROW_UP 		    	0x03
+#define ICON_ARROW_DOWN 	    	0x04
+#define BATTERY_UNKNOWN		    	0x05
+#define BATTERY_100			      	0x06
+#define BATTERY_90			      	0x07
+#define BATTERY_80			      	0x08
+#define BATTERY_70			      	0x09
+#define BATTERY_60			      	0x0A
+#define BATTERY_50			      	0x0B
+#define BATTERY_40			      	0x0C
+#define BATTERY_30			      	0x0D
+#define BATTERY_20			   	    0x0E
+#define BATTERY_10			   		0x0F
+#define BATTERY_0			        0x10
+#define WIFI_CONNECTED		    	0x11
+#define WIFI_NOTCONNECTED	    	0x12
+#define WI_FI_IMG_OFF		      	0x13
+#define BT_CONNECTED		      	0x14
+#define BT_NOTCONNECTED		    	0x15
+#define BT_OFF				        0x16
+
+#define SETTINGS_BRIGHTNESS   		0x17
+#define SETTINGS_FADEBRIGHTNESS   	0x18
+#define SETTINGS_FADEIN   			0x19
+#define SETTINGS_SCREENSAVERIN   	0x1A
+#define SETTINGS_LOCKSCREENIN   	0x1B
+#define SETTINGS_SCREEN				0x1C
+#define SETTINGS_BACK				0x1D
+#define SETTINGS_TIME				0x1E
 
 #define PARAM_TYPE_ICON 	0x01
 #define PARAM_TYPE_NAME 	0x02
@@ -117,6 +135,9 @@ unsigned int dtime = 0;
 			// for correct drawing background
 			driver_clearScreen();
 		#endif
+		set_prevent_displayoff_flag(false);
+		set_prevent_backlightlow_flag(false);
+		
 		currentApp = getApp(app_numm);
 	}
 #endif
@@ -132,8 +153,10 @@ unsigned int dtime = 0;
 	#include <avr/sleep.h>
 #endif
 
-void setup()
-{ 
+void setup(){
+
+  setup_redifined_millis();
+
   #ifdef debug
 	Serial.begin(115200);
   #endif
@@ -181,17 +204,19 @@ void setup()
 		driver_vibro_setup();
 	#endif
 
+	#ifdef device_has_magnitometer
+		driver_magnitometer_setup();
+	#endif
+
 }
 
 void loop(){
+	dtime = os_clock_update();
+	
 	clearscreen_displayDriver();
-
 	#ifdef tabletView
     	if (currentApp->showStatusBar) os_draw_statusbar();
 	#endif
-
-	dtime = os_clock_update();
-	
 	os_control_loop(); // Check buttons
 
 	#ifndef do_Not_use_native_apps
@@ -199,6 +224,23 @@ void loop(){
 	#else
 		no_native_apps_LOOP();
 	#endif
+
+	/*
+	
+	if(digitalRead(48)){
+		drawString("1",0,0);
+	}
+	if(digitalRead(47)){
+		drawString("2",10,0);
+	}
+	if(digitalRead(46)){
+		drawString("3",20,0);
+	}
+	if(digitalRead(45)){
+		drawString("4",30,0);
+	}
+	
+	*/
 	
 
 	////////////////////////////////////////////////////////////////////
@@ -211,7 +253,7 @@ void loop(){
       	//showFreeMemory(); // show free memory
       	//drawDebugString(dtime, 0); // show time needed for 1 loop
       	//drawDebugString(1000/dtime, 10); // FPS
-      	//drawDebugString(millis()/1000, 55); // Timer (if you want to know is os freezing)
+      	//drawDebugString(_millis()/1000, 55); // Timer (if you want to know is os freezing)
 
 		#ifdef colorScreen
 			setDrawColor_contrast();

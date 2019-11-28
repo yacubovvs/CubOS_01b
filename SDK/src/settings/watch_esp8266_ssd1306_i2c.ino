@@ -42,7 +42,7 @@
 #define device_has_power_manager
 #define device_can_sleep
 
-#define millis() (millis() + get_timeInsleep())
+#define _millis() (_millis() + get_timeInsleep())
 
 //#define device_has_backlight_control
 //#define backlight_init 128

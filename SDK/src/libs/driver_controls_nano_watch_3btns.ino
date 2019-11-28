@@ -5,7 +5,7 @@
   PARAMS
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 */
-long last_user_activity = millis();
+long last_user_activity = _millis();
 
 // device buttons count
 const byte os_control_buttons = 3; 
@@ -64,7 +64,7 @@ void os_control_loop(){
   for (byte i=0; i<os_control_buttons; i++){
     if (digitalRead(os_control_buttonsAdr[i])){
 
-      last_user_activity = millis();
+      last_user_activity = _millis();
 
       if(os_control_pressStart[i]){
         // 2-nd loop after press

@@ -38,7 +38,7 @@
 #define device_has_backlight_control
 #define backlight_init 0 //128
 
-#define millis() (millis()*2)
+#define _millis() (_millis()*2)
 
 
 //#define isTouchScreen                 // Conf of controls

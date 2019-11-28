@@ -52,10 +52,10 @@ class appNameClass: public Application{
               touch_count = 0;
             }
 
-            if( (millis() - LastTouch)>700 ){
+            if( (_millis() - LastTouch)>700 ){
               if (isPressStart_Select()){
 
-                LastTouch = millis();
+                LastTouch = _millis();
                 touches[touch_count][0] = get_os_touch_x();
                 touches[touch_count][1] = get_os_touch_y();
 
@@ -125,7 +125,7 @@ class appNameClass: public Application{
             #ifdef tabletView
                 this->showStatusBar = false;
             #endif
-            LastTouch = millis();
+            LastTouch = _millis();
             touch_count = 0;
 
             for(int i=0; i<3; i++){

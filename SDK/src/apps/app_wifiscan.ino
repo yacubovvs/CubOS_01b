@@ -30,9 +30,15 @@ class appNameClass: public Application{
             //EVERY FRAME CODE
             drawString_centered("Wifi scan",SCREEN_WIDTH/2,10);
 
-            if (isPressStart_Select()){
-                os_switch_to_app(-1);
-            }
+            #ifdef control_has_backbtn
+              if (isPressStart_Select() || isPressStart_Back()){
+                finish();
+              }
+            #else
+              if (isPressStart_Select()){
+                finish();
+              }
+            #endif
 
            /*                                                                                         *
             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -40,6 +46,11 @@ class appNameClass: public Application{
             */
 
         };
+
+        void finish(){
+          os_switch_to_app(-1);
+        }
+
         void setup(){
             /*
             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 

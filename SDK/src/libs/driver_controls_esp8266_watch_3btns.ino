@@ -17,7 +17,7 @@ long os_control_get_last_user_avtivity(){
 }
 
 void os_control_reset_last_user_avtivity(){
-  last_user_activity = millis();
+  last_user_activity = _millis();
 }
 
 void os_control_check_last_user_avtivity(){
@@ -74,7 +74,7 @@ void os_control_loop(){
   
   for (byte i=0; i<os_control_buttons; i++){
     if (digitalRead(os_control_buttonsAdr[i])){
-      last_user_activity = millis();
+      last_user_activity = _millis();
 
       if(os_control_pressStart[i]){
         // 2-nd loop after press
