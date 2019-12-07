@@ -78,7 +78,7 @@ int driver_magnitometer_get_azimuth(){
   azimuth = -atan2(
     x,
     y
-  )* 180 / PI + 360;
+  )* 180 / PI;
 
   return azimuth;
 }

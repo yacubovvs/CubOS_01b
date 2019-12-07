@@ -27,7 +27,6 @@
 #define hasHardwareButtons              // Conf of controls with hardware btns 
 #define control_buttons_count 4
 #define control_buttons_pins {48, 47, 46, 45}
-#define control_buttons_amount 4
 #define control_has_backbtn
 
 #define control_buttons_on_side
@@ -41,6 +40,7 @@
 
 #define device_has_magnitometer
 #define magnitometer_power_pin 14
+#define magnitometr_invert
 
 #define device_has_bluetooth
 #define device_bluetooth_serial Serial1

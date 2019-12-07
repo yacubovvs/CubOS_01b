@@ -717,15 +717,16 @@ void accelerometer_setup()
 }
 
 void accelerometer_sleep(){
-  uint8_t c;
-  MPU6050_read (MPU6050_PWR_MGMT_1, &c, 0);
-  MPU6050_write_reg (MPU6050_PWR_MGMT_1, 1);
+  //uint8_t c;
+  //MPU6050_read (MPU6050_PWR_MGMT_1, &c, 0);
+  MPU6050_write_reg (MPU6050_PWR_MGMT_1, 0);
+  MPU6050_write_reg (MPU6050_PWR_MGMT_1, 0|bit(MPU6050_SLEEP));
 }
 
 void accelerometer_wake(){
-  uint8_t c;
-  MPU6050_read (MPU6050_PWR_MGMT_1, &c, 1);
-  MPU6050_write_reg (MPU6050_PWR_MGMT_1, 0);
+  //uint8_t c;
+  //MPU6050_read (MPU6050_PWR_MGMT_1, &c, 1);
+  MPU6050_write_reg (MPU6050_PWR_MGMT_1, 1);
 }
 
 accel_t_gyro_union accel_t_gyro;

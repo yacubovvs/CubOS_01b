@@ -41,6 +41,7 @@
 
 #define device_has_magnitometer
 #define magnitometer_power_pin 14
+#define magnitometr_invert
 
 #define device_has_bluetooth
 #define device_bluetooth_serial Serial1

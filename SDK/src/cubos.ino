@@ -135,8 +135,10 @@ unsigned int dtime = 0;
 			// for correct drawing background
 			driver_clearScreen();
 		#endif
-		set_prevent_displayoff_flag(false);
-		set_prevent_backlightlow_flag(false);
+		#ifdef device_has_power_manager
+			set_prevent_displayoff_flag(false);
+			set_prevent_backlightlow_flag(false);
+		#endif
 		
 		currentApp = getApp(app_numm);
 	}
@@ -155,10 +157,19 @@ unsigned int dtime = 0;
 
 void setup(){
 
-  setup_redifined_millis();
+  #ifdef conf_atm64_watch4
+  	setup_redifined_millis();
+  #endif
 
   #ifdef debug
 	Serial.begin(115200);
+  #endif
+
+  #ifdef DeviceSerial
+	#ifndef DeviceSerialSpeed
+		#define DeviceSerialSpeed 9600
+	#endif
+	DeviceSerial.begin(DeviceSerialSpeed);
   #endif
 
   #ifdef platform_avr

@@ -45,7 +45,12 @@ class appNameClass: public Application{
 
             int compass_angle;
             driver_magnitometer_loop();
-            compass_angle = 360*2 - driver_magnitometer_get_azimuth();
+            #ifdef magnitometr_invert
+              compass_angle = driver_magnitometer_get_azimuth() + 360;
+            #else
+              compass_angle = 360 - driver_magnitometer_get_azimuth();
+            #endif
+            
 
             float radian_angle_cos  = cos((compass_angle-90)*get_pi()/180);
             float radian_angle_sin  = sin((compass_angle-90)*get_pi()/180);
@@ -83,12 +88,17 @@ class appNameClass: public Application{
             #define x_scale 1
             
             drawRect_custom(
-                SCREEN_CENTER_X + 20*radian_angle_cos*x_scale,  SCREEN_CENTER_Y + 20*radian_angle_sin,
-                SCREEN_CENTER_X - 10*radian_angle_sin*x_scale - 20*radian_angle_cos*x_scale,   SCREEN_CENTER_Y + 10*radian_angle_cos - 20*radian_angle_sin,
-                SCREEN_CENTER_X - 16*radian_angle_cos*x_scale,  SCREEN_CENTER_Y - 16*radian_angle_sin,
-                SCREEN_CENTER_X + 10*radian_angle_sin*x_scale - 20*radian_angle_cos*x_scale,   SCREEN_CENTER_Y - 10*radian_angle_cos - 20*radian_angle_sin,
+                SCREEN_CENTER_X + 20*radian_angle_cos*x_scale,  
+                SCREEN_CENTER_Y + 20*radian_angle_sin,
+                SCREEN_CENTER_X - 10*radian_angle_sin*x_scale - 20*radian_angle_cos*x_scale,   
+                SCREEN_CENTER_Y + 10*radian_angle_cos - 20*radian_angle_sin,
+                SCREEN_CENTER_X - 16*radian_angle_cos*x_scale,  
+                SCREEN_CENTER_Y - 16*radian_angle_sin,
+                SCREEN_CENTER_X + 10*radian_angle_sin*x_scale - 20*radian_angle_cos*x_scale,   
+                SCREEN_CENTER_Y - 10*radian_angle_cos - 20*radian_angle_sin,
                 false
             );
+            
 
 
             if(isPressStart_Left()){
