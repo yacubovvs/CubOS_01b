@@ -1,5 +1,17 @@
 {
     "files.associations": {
-        "cstddef": "cpp"
+        "cstddef": "cpp",
+        "algorithm": "cpp",
+        "random": "cpp",
+        "__locale": "cpp",
+        "bitset": "cpp",
+        "optional": "cpp",
+        "memory": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "system_error": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "vector": "cpp"
     }
 }

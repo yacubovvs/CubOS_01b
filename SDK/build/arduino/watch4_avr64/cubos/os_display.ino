@@ -21,7 +21,11 @@ bool get_os_auto_redraw_screen(){
 }
 
 void drawString(char * dString, int x, int y){
-  setStr(dString, x, y);
+  setStr(dString, x, y, 1);
+}
+
+void drawString(char * dString, int x, int y, byte fontSize){
+  setStr(dString, x, y, fontSize);
 }
 
 void drawString(int val, int x, int y){
@@ -30,12 +34,16 @@ void drawString(int val, int x, int y){
   drawString( str, 0, y);
 }
 
-void drawString(String dString, int x, int y){
+void drawString(String dString, int x, int y, byte fontSize){
   int str_len = dString.length() + 1;
   char element_value[str_len];
   dString.toCharArray(element_value, str_len);
 
-  setStr(element_value, x, y);
+  drawString(element_value, x, y, 1);
+}
+
+void drawString(String dString, int x, int y){
+  drawString(dString, x, y, 1);
 }
 
 void drawString_centered(char * dString, int y){
@@ -222,13 +230,13 @@ void drawIcon(const unsigned char* data, int x, int y){
     while(1){
 
       //if(data_size<=readPosition) break;
-      byte color_var = redRawChar(data, readPosition);
+      byte color_var = readRawChar(data, readPosition);
       
       if (color_var==0x04){ // new color layout
         
-        byte red    = redRawChar(data, readPosition); 
-        byte green  = redRawChar(data, readPosition); 
-        byte blue   = redRawChar(data, readPosition); 
+        byte red    = readRawChar(data, readPosition); 
+        byte green  = readRawChar(data, readPosition); 
+        byte blue   = readRawChar(data, readPosition); 
 
         setDrawColor(red, green, blue);
         
@@ -237,7 +245,7 @@ void drawIcon(const unsigned char* data, int x, int y){
 
         for (int reading_byte=0; reading_byte<(image_wigth*image_height%8==0?image_wigth*image_height/8:image_wigth*image_height/8+1); reading_byte++){
           //if(data_size<=readPosition) break;
-          current_byte = redRawChar(data, readPosition);
+          current_byte = readRawChar(data, readPosition);
 
           if(current_byte!=0x00 && current_byte!=0xFF){
             for (unsigned char d=0; d<8; d++){
@@ -563,15 +571,26 @@ static const unsigned char font_cubos[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00  // #255 NBSP
 };
 
-void setStr(char * dString, int x, int y){
+void setStr(char * dString, int x, int y, byte fontSize){
         
   for (int i=0; i<strlen(dString); i++){
 
     for (byte char_part=0; char_part<5; char_part++){
       const unsigned char_part_element = pgm_read_byte(&font_cubos[dString[i] *5 + char_part]);
       for (unsigned char bit=0; bit<8; bit++){
-        if (char_part_element&1<<bit) setPixel(x + char_part + i*FONT_CHAR_WIDTH, y + bit);
+        if (char_part_element&1<<bit){
+          if(fontSize>1){
+            for(int j=0; j<fontSize; j++){
+              for(int jj=0; jj<fontSize; jj++){
+                setPixel(x + char_part*fontSize + i*FONT_CHAR_WIDTH*fontSize + jj, y + bit*fontSize - j);
+              }
+            }
+          }else{
+            setPixel(x + char_part + i*FONT_CHAR_WIDTH, y + bit);
+          }
+        }
       }
     }
+
   }
 }

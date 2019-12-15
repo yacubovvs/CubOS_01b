@@ -89,79 +89,88 @@ char get_preset_second(){return preset_second;}
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 */
 
-unsigned long _millis_dif = 0;
-
-unsigned long _millis(){
-  //return millis();
-  return millis() + _millis_dif;
-}
-
-void add_miliss_dif(int dif){
-  _millis_dif += dif;
-}
-
 #ifdef conf_atm64_watch4
-  byte timer25_of_timer2 = 0;
-  unsigned int timer1000_of_timer2 = 0;
-#endif
+  unsigned long _millis_dif = 0;
 
-ISR(TIMER2_OVF_vect)
-{
-  // Using when clock_div_128
-  _millis_dif += 33;
+  unsigned long _millis(){
+    //return millis();
+    return millis() + _millis_dif;
+  }
+
+  void add_miliss_dif(int dif){
+    _millis_dif += dif;
+  }
 
   #ifdef conf_atm64_watch4
-    if(timer25_of_timer2==25){
-      timer25_of_timer2=0;
-      _millis_dif -= 1;
-    }
+    byte timer25_of_timer2 = 0;
+    unsigned int timer1000_of_timer2 = 0;
+  #endif
 
-    if(timer1000_of_timer2%10==0){
-      _millis_dif -= 1;
-      if(timer1000_of_timer2%100==0){
-        _millis_dif -= 9;
-        if(timer1000_of_timer2==1000){
-          timer1000_of_timer2=0;
-          _millis_dif -= 7;
+  ISR(TIMER2_OVF_vect)
+  {
+    // Using when clock_div_128
+    _millis_dif += 33;
+
+    #ifdef conf_atm64_watch4
+      if(timer25_of_timer2==25){
+        timer25_of_timer2=0;
+        _millis_dif -= 1;
+      }
+
+      if(timer1000_of_timer2%10==0){
+        _millis_dif -= 1;
+        if(timer1000_of_timer2%100==0){
+          _millis_dif -= 9;
+          if(timer1000_of_timer2==1000){
+            timer1000_of_timer2=0;
+            _millis_dif -= 7;
+          }
         }
       }
-    }
+      
+      
+      timer25_of_timer2++;
+      timer1000_of_timer2++;
+    #endif  
+  }
+
+
+  void setup_redifined_millis(){
+    pinMode(41, OUTPUT);
+  }
+
+
+  byte TCCR2_old;
+  byte TCNT0_old;
+  byte TIMSK_old;
+
+  void sleep_millis_timer_on(){
+    cli();
     
+    TCCR2_old = TCCR2;
+    TCNT0_old = TCNT0;
+    TIMSK_old = TIMSK;
     
-    timer25_of_timer2++;
-    timer1000_of_timer2++;
-  #endif  
-}
+    TCCR2 = 0x02;
+    TCNT0 = 0xB8;
+    TIMSK = (1<<TOIE2);
+    sei();
+  }
 
+  void sleep_millis_timer_off(){
+    cli();
+    
+    TCCR2 = TCCR2_old;
+    TCNT0 = TCNT0_old;
+    TIMSK = TIMSK_old;
+    
+    sei();
+  }
+#else
+  //unsigned long _millis_dif = 0;
 
-void setup_redifined_millis(){
-  pinMode(41, OUTPUT);
-}
-
-
-byte TCCR2_old;
-byte TCNT0_old;
-byte TIMSK_old;
-
-void sleep_millis_timer_on(){
-  cli();
-  
-  TCCR2_old = TCCR2;
-  TCNT0_old = TCNT0;
-  TIMSK_old = TIMSK;
-  
-  TCCR2 = 0x02;
-  TCNT0 = 0xB8;
-  TIMSK = (1<<TOIE2);
-  sei();
-}
-
-void sleep_millis_timer_off(){
-  cli();
-  
-   TCCR2 = TCCR2_old;
-   TCNT0 = TCNT0_old;
-   TIMSK = TIMSK_old;
-  
-  sei();
-}
+  unsigned long _millis(){
+    //return millis();
+    return millis();// + _millis_dif;
+  }
+#endif

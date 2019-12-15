@@ -27,7 +27,6 @@
 #define hasHardwareButtons              // Conf of controls with hardware btns 
 #define control_buttons_count 4
 #define control_buttons_pins {48, 47, 46, 45}
-#define control_buttons_amount 4
 #define control_has_backbtn
 
 #define control_buttons_on_side
@@ -231,8 +230,10 @@ unsigned int dtime = 0;
 			// for correct drawing background
 			driver_clearScreen();
 		#endif
-		set_prevent_displayoff_flag(false);
-		set_prevent_backlightlow_flag(false);
+		#ifdef device_has_power_manager
+			set_prevent_displayoff_flag(false);
+			set_prevent_backlightlow_flag(false);
+		#endif
 		
 		currentApp = getApp(app_numm);
 	}
@@ -251,10 +252,19 @@ unsigned int dtime = 0;
 
 void setup(){
 
-  setup_redifined_millis();
+  #ifdef conf_atm64_watch4
+  	setup_redifined_millis();
+  #endif
 
   #ifdef debug
 	Serial.begin(115200);
+  #endif
+
+  #ifdef DeviceSerial
+	#ifndef DeviceSerialSpeed
+		#define DeviceSerialSpeed 9600
+	#endif
+	DeviceSerial.begin(DeviceSerialSpeed);
   #endif
 
   #ifdef platform_avr
@@ -319,25 +329,7 @@ void loop(){
 		currentApp->loop_app();
 	#else
 		no_native_apps_LOOP();
-	#endif
-
-	/*
-	
-	if(digitalRead(48)){
-		drawString("1",0,0);
-	}
-	if(digitalRead(47)){
-		drawString("2",10,0);
-	}
-	if(digitalRead(46)){
-		drawString("3",20,0);
-	}
-	if(digitalRead(45)){
-		drawString("4",30,0);
-	}
-	
-	*/
-	
+	#endif	
 
 	////////////////////////////////////////////////////////////////////
 	//  Debug string data

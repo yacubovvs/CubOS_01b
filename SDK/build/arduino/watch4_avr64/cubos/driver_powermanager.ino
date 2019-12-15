@@ -357,6 +357,8 @@ void powermanager_bluetooth_power(boolean on){
     }
 #endif
 
-bool powerManager_isRequest_to_screenSaver(){
-    return (abs(_millis() - os_control_get_last_user_avtivity())>get_delay_before_ScreenSaver()*1000 && os_control_get_last_user_avtivity()!=-1 );
-}
+#ifdef device_has_power_manager
+    bool powerManager_isRequest_to_screenSaver(){
+        return (abs(_millis() - os_control_get_last_user_avtivity())>get_delay_before_ScreenSaver()*1000 && os_control_get_last_user_avtivity()!=-1 );
+    }
+#endif

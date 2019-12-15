@@ -176,8 +176,8 @@ struct MenuElement{
 
 };
 
-#define MenuElement_lenght 9  // !!! DO NOT FORGET TO CHANGE IF ADD TO MENU LIST !!!
-const MenuElement settingMenu[MenuElement_lenght] = {
+#define MenuElement_lenght (sizeof(settingMenu)/sizeof(settingMenu[0]))  // !!! DO NOT FORGET TO CHANGE IF ADD TO MENU LIST !!!
+const MenuElement settingMenu[] = {
 
     MenuElement{
         0x01,                   //  ID
@@ -193,6 +193,8 @@ const MenuElement settingMenu[MenuElement_lenght] = {
             0x03,                   //  Action
             0x01                    //  Parent ID
         },
+
+        #ifdef device_has_power_manager
         MenuElement{
             0x05,                   //  ID
             "Fade in",              //  Title
@@ -221,6 +223,7 @@ const MenuElement settingMenu[MenuElement_lenght] = {
             0x03,                   //  Action
             0x01                    //  Parent ID
         },
+        #endif
         MenuElement{
             0x09,                   //  ID
             "Back",                 //  Title
@@ -228,6 +231,7 @@ const MenuElement settingMenu[MenuElement_lenght] = {
             0x04,                   //  Action
             0x01                    //  Parent ID
         },
+    #ifndef disable_clock
     MenuElement{
         0x02,                   //  ID
         "Time",                 //  Title
@@ -235,6 +239,7 @@ const MenuElement settingMenu[MenuElement_lenght] = {
         0x02,                   //  Action
         0x00                    //  Parent ID
     },
+    #endif
     MenuElement{
         0x03,                   //  ID
         "Exit",                 //  Title
@@ -386,11 +391,19 @@ class appNameClass: public Application{
             drawString_centered(get_value_current_set_value(current_set_value_var), SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
             
             if (isPressStart_Left()){
-                set_value_current_set_value( current_set_value_var, (byte)(get_raw_current_set_value(current_set_value_var)+1) );
+                set_value_current_set_value( current_set_value_var, (byte)(get_raw_current_set_value(current_set_value_var)-1
+                #ifdef control_buttons_on_side
+                    *(-1)
+                #endif
+                ) );
             }
 
             if (isPressStart_Right()){
-                set_value_current_set_value( current_set_value_var, (byte)(get_raw_current_set_value(current_set_value_var)-1) );
+                set_value_current_set_value( current_set_value_var, (byte)(get_raw_current_set_value(current_set_value_var)+1
+                #ifdef control_buttons_on_side
+                    *(-1)
+                #endif
+                ) );
             }
 
             if (isPressStart_Select()

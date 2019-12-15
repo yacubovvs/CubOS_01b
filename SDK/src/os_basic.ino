@@ -152,6 +152,21 @@ long readRawChar(const unsigned char* data, long &position){
     return data_char;
 }   
 
+/*
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+    #                                                                   #
+    #                              CONVERT                              #
+    #                                                                   #
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+*/
+
+/*
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+    #                                                                   #
+    #                               OTHER                               #
+    #                                                                   #
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+*/
 
 #ifdef device_can_cpu_prescale
     void set_cpu_prescale(clock_div_t prescale){

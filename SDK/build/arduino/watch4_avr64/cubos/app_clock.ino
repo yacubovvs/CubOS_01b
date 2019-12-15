@@ -20,6 +20,51 @@ char current_watchface = 0;
 
 class appNameClass: public Application{
     public:
+
+        char res[100];
+
+        char* int2engCharArr(int x)// 0 - 999999
+        {
+            char *ptr = res;
+            const char *a[] = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"};
+
+            if(x <= 12)
+            {
+                ptr += sprintf(ptr,"%s ",a[x]);
+                return res;
+            }
+
+            if(x >= 20)
+            {
+                switch(x/10)
+                {
+                    case 2 : ptr += sprintf(ptr,"twen"); break;
+                    case 3 : ptr += sprintf(ptr,"thir"); break;
+                    case 5 : ptr += sprintf(ptr,"fif"); break;
+                    case 8 : ptr += sprintf(ptr,"eigh"); break;
+                    default : ptr += sprintf(ptr,a[x/10]); break;
+                }
+                ptr += sprintf(ptr,"ty ");
+                x %= 10;
+            }
+            if(x >= 13)
+            {
+                x %= 10;
+                switch(x)
+                {
+                    case 2 : ptr += sprintf(ptr,"twen"); break;
+                    case 3 : ptr += sprintf(ptr,"thir"); break;
+                    case 5 : ptr += sprintf(ptr,"fif"); break;
+                    case 8 : ptr += sprintf(ptr,"eigh"); break;
+                    default : ptr += sprintf(ptr,a[x]);
+                }
+                ptr += sprintf(ptr,"teen");
+            }
+            else if(x > 0)
+                ptr += sprintf(ptr,"%s ",a[x]);
+            return res;
+        }
+
         virtual void loop() override{
             /*
             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -119,7 +164,7 @@ class appNameClass: public Application{
     //  WATCHFACES:
     //  1. Digital - HH:MM
     //  2. Digital - HH:MM:SS
-    //  3. Analog
+    //  3. texr
 
     void app_clock_loop(){
 
@@ -154,83 +199,20 @@ class appNameClass: public Application{
           draw_digit(os_clock_currentTime_seconds()%10, 7, scale, x, y);
         }
 
-      #ifdef conf_arduinoMega2560_touch
-      }
-      #else
       }else if(current_watchface==2){
 
-        // Drawing lines
-        // 1. Bold lines 
+        if(os_clock_currentTime_hour()>20){
+          drawString(int2engCharArr(20), 0, FONT_CHAR_HEIGHT*0, 2);
+          drawString(int2engCharArr(os_clock_currentTime_hour()-20), 20, FONT_CHAR_HEIGHT*2, 2);
+        }else drawString(int2engCharArr(os_clock_currentTime_hour()), 0, FONT_CHAR_HEIGHT*2, 2);
+        if(os_clock_currentTime_hour()==1) drawString("hour", 30, FONT_CHAR_HEIGHT*4 - 1);
+        else drawString("hours", 30, FONT_CHAR_HEIGHT*4 - 1);
+        if(os_clock_currentTime_minutes()/10 == 2 || os_clock_currentTime_minutes()/10 == 3 || os_clock_currentTime_minutes()/10 == 4) drawString(int2engCharArr(os_clock_currentTime_minutes()/10*10), 0, FONT_CHAR_HEIGHT*5 +1, 2);
+        else drawString(int2engCharArr(os_clock_currentTime_minutes()/5*5), 0, FONT_CHAR_HEIGHT*5+1, 2);
+        if (os_clock_currentTime_minutes()==1) drawString("minute",                                       20, FONT_CHAR_HEIGHT*7);
+        else drawString("minutes", 30, FONT_CHAR_HEIGHT*7);
 
-        #define analog_boldlines_height   2
-        #define analog_boldlines_width    2
-        #define analog_smalllines_height  0
-
-        drawRect(center_x + analog_boldlines_width - 1, center_y - radius_small, center_x - analog_boldlines_width, center_y - radius_small + analog_boldlines_height, true); // top
-        drawRect(center_x + analog_boldlines_width - 1, center_y + radius_small - analog_boldlines_height-1, center_x - analog_boldlines_width, center_y + radius_small-1, true); // bottom
-
-        drawRect(center_x + radius_small, center_y + analog_boldlines_width - 1, center_x + radius_small - analog_boldlines_height - 1, center_y - analog_boldlines_width + 1, true); // right
-        drawRect(center_x - radius_small, center_y + analog_boldlines_width - 1, center_x - radius_small + analog_boldlines_height + 1, center_y - analog_boldlines_width + 1, true); // left
-
-        // 2. Small lines
-        #define i_max 24
-        for (byte i=0; i<i_max; i++){
-          float i_cos = cos(360/i_max*i*get_pi()/180);
-          float i_sin = sin(360/i_max*i*get_pi()/180);
-          drawLine(center_x + round((radius_small - analog_smalllines_height) * i_cos), center_y + round((radius_small - analog_smalllines_height) * i_sin), center_x + round(radius_small * i_cos), center_y + round(radius_small * i_sin));
-        }
-        
-        // 3. Drawing arrows
-        #define analog_arrow_hour_length          radius_small*0.70
-        #define analog_arrow_hour_back_length     radius_small*0.20
-        #define analog_arrow_hour_width           radius_small*0.06
-
-        #define analog_arrow_minutes_length       radius_small*0.87
-        #define analog_arrow_minutes_back_length  radius_small*0.30
-        #define analog_arrow_minutes_width        radius_small*0.04
-
-        #define analog_arrow_seconds_length       radius_small*0.95
-        #define analog_arrow_seconds_back_length  radius_small*0.35
-        #define analog_arrow_seconds_width        0
-
-        // Hours
-        byte hours = os_clock_currentTime_hour();
-        float radian_angle_arrow_cos  = cos(-360/12*((hours+3)%12)*get_pi()/180);
-        float radian_angle_arrow_sin    = sin(-360/12*((hours+3)%12)*get_pi()/180);
-
-        drawRect_custom(
-          center_x - analog_arrow_hour_length*radian_angle_arrow_cos - analog_arrow_hour_width*radian_angle_arrow_sin,      center_y + analog_arrow_hour_length*radian_angle_arrow_sin - analog_arrow_hour_width*radian_angle_arrow_cos,
-          center_x + analog_arrow_hour_back_length*radian_angle_arrow_cos - analog_arrow_hour_width*radian_angle_arrow_sin,   center_y - analog_arrow_hour_back_length*radian_angle_arrow_sin - analog_arrow_hour_width*radian_angle_arrow_cos,
-          center_x + analog_arrow_hour_back_length*radian_angle_arrow_cos + analog_arrow_hour_width*radian_angle_arrow_sin,   center_y - analog_arrow_hour_back_length*radian_angle_arrow_sin + analog_arrow_hour_width*radian_angle_arrow_cos,
-          center_x - analog_arrow_hour_length*radian_angle_arrow_cos + analog_arrow_hour_width*radian_angle_arrow_sin,      center_y + analog_arrow_hour_length*radian_angle_arrow_sin + analog_arrow_hour_width*radian_angle_arrow_cos,
-          true
-        );
-
-        // Minutes
-        byte minutes = os_clock_currentTime_minutes();
-        radian_angle_arrow_cos  = cos(-360/60*((minutes+15)%60)*get_pi()/180);
-        radian_angle_arrow_sin  = sin(-360/60*((minutes+15)%60)*get_pi()/180);
-
-
-        drawRect_custom(
-          center_x - analog_arrow_minutes_length*radian_angle_arrow_cos - analog_arrow_minutes_width*radian_angle_arrow_sin,    center_y + analog_arrow_minutes_length*radian_angle_arrow_sin - analog_arrow_minutes_width*radian_angle_arrow_cos,
-          center_x + analog_arrow_minutes_back_length*radian_angle_arrow_cos - analog_arrow_minutes_width*radian_angle_arrow_sin,   center_y - analog_arrow_minutes_back_length*radian_angle_arrow_sin - analog_arrow_minutes_width*radian_angle_arrow_cos,
-          center_x + analog_arrow_minutes_back_length*radian_angle_arrow_cos + analog_arrow_minutes_width*radian_angle_arrow_sin,   center_y - analog_arrow_minutes_back_length*radian_angle_arrow_sin + analog_arrow_minutes_width*radian_angle_arrow_cos,
-          center_x - analog_arrow_minutes_length*radian_angle_arrow_cos + analog_arrow_minutes_width*radian_angle_arrow_sin,    center_y + analog_arrow_minutes_length*radian_angle_arrow_sin + analog_arrow_minutes_width*radian_angle_arrow_cos,
-          true
-        );
-
-        // Seconds
-        byte seconds = os_clock_currentTime_seconds();
-        radian_angle_arrow_cos = cos(-360/60*((seconds+15)%60)*get_pi()/180);
-        radian_angle_arrow_sin = sin(-360/60*((seconds+15)%60)*get_pi()/180);
-
-        drawLine(
-          center_x - analog_arrow_seconds_length*radian_angle_arrow_cos - analog_arrow_seconds_width*radian_angle_arrow_sin,      center_y + analog_arrow_seconds_length*radian_angle_arrow_sin - analog_arrow_seconds_width*radian_angle_arrow_cos,
-          center_x + analog_arrow_seconds_back_length*radian_angle_arrow_cos - analog_arrow_seconds_width*radian_angle_arrow_sin,   center_y - analog_arrow_seconds_back_length*radian_angle_arrow_sin - analog_arrow_seconds_width*radian_angle_arrow_cos
-        );
       }
-      #endif
     }
 
 };

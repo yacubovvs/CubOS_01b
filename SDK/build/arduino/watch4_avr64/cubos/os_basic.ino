@@ -137,21 +137,39 @@ uint64_t bytes_to_value(byte byte0, byte byte1, byte byte2, byte byte3, byte byt
 }
 
 int readRawParam(const unsigned char* data, long &position){
-    byte paramType = redRawChar(data, position);
+    byte paramType = readRawChar(data, position);
 
     if (paramType==0x02){
-      return (byte)redRawChar(data, position);
+      return (byte)readRawChar(data, position);
     }else if(paramType==0x03){
-      return (unsigned int)bytes_to_value(redRawChar(data, position), redRawChar(data, position),0,0,0,0,0,0);
+      return (unsigned int)bytes_to_value(readRawChar(data, position), readRawChar(data, position),0,0,0,0,0,0);
     }
 }
 
-long redRawChar(const unsigned char* data, long &position){
+long readRawChar(const unsigned char* data, long &position){
     unsigned char data_char = (char)pgm_read_word(&(data[position]));
     position ++;
     return data_char;
 }   
 
-void set_cpu_prescale(clock_div_t prescale){
-  clock_prescale_set(prescale);
-}
+/*
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+    #                                                                   #
+    #                              CONVERT                              #
+    #                                                                   #
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+*/
+
+/*
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+    #                                                                   #
+    #                               OTHER                               #
+    #                                                                   #
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+*/
+
+#ifdef device_can_cpu_prescale
+    void set_cpu_prescale(clock_div_t prescale){
+        clock_prescale_set(prescale);
+    }
+#endif

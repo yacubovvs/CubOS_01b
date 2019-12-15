@@ -332,8 +332,23 @@ void MainMenu::loop(){
       //  Not scrollable element
 
       // Arrows
-      drawIcon( (const unsigned char *)getIcon(ICON_ARROW_RIGHT), SCREEN_WIDTH-4, (SCREEN_HEIGHT-7)/2); // Arrow right
-      drawIcon( (const unsigned char *)getIcon(ICON_ARROW_LEFT), 0, (SCREEN_HEIGHT-7)/2); // Arrow left  
+      drawIcon( 
+        (const unsigned char *)getIcon(ICON_ARROW_RIGHT), 
+        SCREEN_WIDTH-4, 
+        (SCREEN_HEIGHT-7)/2
+        #ifdef SCREEN_TINYSIZE
+          -7
+        #endif
+      ); // Arrow right
+      
+      drawIcon( 
+        (const unsigned char *)getIcon(ICON_ARROW_LEFT), 
+        0, 
+        (SCREEN_HEIGHT-7)/2
+        #ifdef SCREEN_TINYSIZE
+          -7
+        #endif
+      ); // Arrow left  
       
       // Icons
       drawIcon( (const unsigned char *)getAppParams(this->checkAppId(this->current_app_menu),(PARAM_TYPE_ICON)), (SCREEN_WIDTH - 32)/2 -1, 
@@ -342,6 +357,9 @@ void MainMenu::loop(){
           (SCREEN_HEIGHT - 32)/2.5 + 2
         #else
           (SCREEN_HEIGHT - 32)/2.5
+          #ifdef SCREEN_TINYSIZE
+            -7
+          #endif
         #endif
       );
       //
@@ -441,7 +459,9 @@ void MainMenu::loop(){
             os_switch_to_app(0); // to watch widget
           }
       #else
-        if(powerManager_isRequest_to_screenSaver()) os_switch_to_app(0);
+        #ifdef device_has_power_manager
+          if(powerManager_isRequest_to_screenSaver()) os_switch_to_app(0);
+        #endif
       #endif
 
 

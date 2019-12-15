@@ -4,8 +4,11 @@
 
 #include <Wire.h>
 
-
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+#ifdef SCREEN_SSD1306
+  U8G2_SSD1306_64X48_ER_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+#else
+  U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+#endif
 
 /*
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -49,7 +52,9 @@ void setDrawColor_contrast(){
 void setup_displayDriver(){
   u8g2.begin();
 
-  set_brightness(get_backlight_light());
+  #ifdef device_has_backlight_control
+    set_brightness(get_backlight_light());
+  #endif
 }
 
 void display_driver_power_off(){

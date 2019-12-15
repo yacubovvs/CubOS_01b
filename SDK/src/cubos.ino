@@ -234,25 +234,7 @@ void loop(){
 		currentApp->loop_app();
 	#else
 		no_native_apps_LOOP();
-	#endif
-
-	/*
-	
-	if(digitalRead(48)){
-		drawString("1",0,0);
-	}
-	if(digitalRead(47)){
-		drawString("2",10,0);
-	}
-	if(digitalRead(46)){
-		drawString("3",20,0);
-	}
-	if(digitalRead(45)){
-		drawString("4",30,0);
-	}
-	
-	*/
-	
+	#endif	
 
 	////////////////////////////////////////////////////////////////////
 	//  Debug string data

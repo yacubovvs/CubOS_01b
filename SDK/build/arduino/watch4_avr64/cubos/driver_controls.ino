@@ -28,7 +28,11 @@ void os_control_reset_debug_last_user_avtivity(){
 
 void os_control_check_last_user_avtivity(){
   for (byte i=0; i<os_control_buttons; i++){
-    if (digitalRead(os_control_buttonsAdr[i])){
+    #ifdef control_buttons_on_HIGH_level
+      if (!digitalRead(os_control_buttonsAdr[i])){
+    #else
+      if (digitalRead(os_control_buttonsAdr[i])){
+    #endif
       os_control_reset_last_user_avtivity();
     }
   }
@@ -79,7 +83,11 @@ boolean isPress(byte num){
 void os_control_loop(){
   
   for (byte i=0; i<os_control_buttons; i++){
-    if (digitalRead(os_control_buttonsAdr[i])){
+    #ifdef control_buttons_on_HIGH_level
+      if (!digitalRead(os_control_buttonsAdr[i])){
+    #else
+      if (digitalRead(os_control_buttonsAdr[i])){
+    #endif
       last_user_activity = _millis();
 
       if(os_control_pressStart[i]){
