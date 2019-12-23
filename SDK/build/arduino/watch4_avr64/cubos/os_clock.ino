@@ -35,7 +35,7 @@ unsigned int os_clock_update(){
 // GETTING TIME 
 
 char* os_clock_get_currentTime_String(){
-  return "12:34";
+  return "";
 }
 
 
@@ -45,15 +45,15 @@ bool os_clock_currentTime_hour_isam(){
 }
 
 byte os_clock_currentTime_hour(){
-  //byte hour = (preset_hour + ((_millis()/1000 + preset_second)/60 + preset_minute)/60)%24;
-  byte hour = (preset_hour + (_millis()/1000)/60/60)%24;
+  byte hour = (preset_hour + ((_millis()/1000 + preset_second)/60 + preset_minute)/60)%24;
+  //byte hour = (preset_hour + (_millis()/1000)/60/60)%24;
   if (os_clock_currentTime_hour_isam() && hour>12) return hour%12;
   else return hour;
 }
 
 byte os_clock_currentTime_minutes(){
-  //return (preset_minute + (_millis()/1000 + preset_second)/60)%60;
-  return (preset_minute + _millis()/1000/60)%60;
+  return (preset_minute + (_millis()/1000 + preset_second)/60)%60;
+  //return (preset_minute + _millis()/1000/60)%60;
 }
 
 byte os_clock_currentTime_seconds(){
