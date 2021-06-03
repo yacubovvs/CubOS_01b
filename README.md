@@ -1,14 +1,5 @@
 # CubOS
 Small OS for Arduino devices, embedded systems and DIY projects
 
-About project:
-http://cubos.ru/
-
-Arduino projects of CubOS:
-https://github.com/yacubovvs/CubOS/tree/master/SDK/build/arduino
-
-B-language compiler:
-https://github.com/yacubovvs/CubOS/tree/master/CubOS%20Compiler
-
-Painter for CubOS:
-https://github.com/yacubovvs/CubOS/tree/master/CubOS%20Painter
+The development of this project has been stopped. 
+Next version https://github.com/yacubovvs/cubos3
